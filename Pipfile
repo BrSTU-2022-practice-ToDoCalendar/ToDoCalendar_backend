@@ -7,6 +7,8 @@ name = "pypi"
 flake8 = "*"
 django = "==2.2.16"
 djangorestframework = "==3.12.4"
+psycopg2 = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
