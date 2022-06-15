@@ -8,6 +8,9 @@ django = "*"
 psycopg2 = "*"
 python-dotenv = "*"
 flake8 = "*"
+pipenv = "*"
+install = "*"
+djangorestframework = "*"
 
 [dev-packages]
 
