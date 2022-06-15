@@ -1,2 +1,13 @@
+from rest_framework import mixins
+from rest_framework import generics
+from rest_framework import viewsets
 
-# Create your views here.
+from .models import User
+from .serializers import RegisterSerializer
+
+
+class MyCustomViewSet(mixins.CreateModelMixin,
+                      viewsets.GenericViewSet):
+
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
