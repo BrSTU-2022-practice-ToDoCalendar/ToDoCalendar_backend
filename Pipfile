@@ -9,6 +9,7 @@ psycopg2 = "*"
 python-dotenv = "*"
 flake8 = "*"
 djangorestframework = "*"
+djangorestframework-simplejwt = "*"
 
 [dev-packages]
 
