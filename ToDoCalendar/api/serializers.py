@@ -24,4 +24,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         return make_password(value)
 
 
-# class TaskSerializer(serializers.ModelSerializer):
+class TaskSerializer(serializers.ModelSerializer):
+    # user = serializers.SlugRelatedField(read_only=True, slug_field='username')
+
+    class Meta:
+        model = Task
+        fields = ('id', 'title', 'description', 'start_date', 'end_date')
+        read_only_fields = ('id',)
