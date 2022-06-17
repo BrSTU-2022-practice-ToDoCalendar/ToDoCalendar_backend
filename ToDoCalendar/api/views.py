@@ -9,3 +9,5 @@ class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
+
+
