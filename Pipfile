@@ -10,7 +10,7 @@ flake8 = "*"
 djangorestframework = "==3.12.4"
 djangorestframework-simplejwt = "*"
 drf-yasg = {extras = ["validation"], version = "*"}
-django = "==2.2.16"
+django = "*"
 
 [dev-packages]
 
