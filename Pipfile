@@ -4,13 +4,13 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
 psycopg2 = "*"
 python-dotenv = "*"
 flake8 = "*"
-pipenv = "*"
-install = "*"
-djangorestframework = "*"
+djangorestframework = "==3.12.4"
+djangorestframework-simplejwt = "*"
+drf-yasg = {extras = ["validation"], version = "*"}
+django = "*"
 
 [dev-packages]
 
