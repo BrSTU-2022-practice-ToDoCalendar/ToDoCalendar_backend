@@ -11,6 +11,7 @@ djangorestframework = "==3.12.4"
 djangorestframework-simplejwt = "*"
 drf-yasg = {extras = ["validation"], version = "*"}
 django = "*"
+pytz = "*"
 
 [dev-packages]
 
