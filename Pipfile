@@ -12,6 +12,7 @@ djangorestframework-simplejwt = "*"
 drf-yasg = {extras = ["validation"], version = "*"}
 django = "*"
 pytz = "*"
+pytest-django = "*"
 
 [dev-packages]
 
