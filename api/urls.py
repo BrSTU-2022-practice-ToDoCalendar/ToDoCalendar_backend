@@ -4,9 +4,11 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt import views as jwt_views
 
 from .views import RegisterViewSet
+from .views import TaskViewSet
 
 router = DefaultRouter()
 router.register(r'register', RegisterViewSet)
+router.register(r'task', TaskViewSet)
 
 
 urlpatterns = [
