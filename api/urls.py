@@ -6,7 +6,7 @@ from rest_framework_simplejwt import views as jwt_views
 from .views import RegisterViewSet
 
 router = DefaultRouter()
-router.register(r'register', RegisterViewSet)
+router.register(r'register', RegisterViewSet, basename='register')
 
 
 urlpatterns = [
