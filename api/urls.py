@@ -7,8 +7,8 @@ from .views import RegisterViewSet
 from .views import TaskViewSet
 
 router = DefaultRouter()
-router.register(r'register', RegisterViewSet)
-router.register(r'task', TaskViewSet)
+router.register(r'register', RegisterViewSet, basename = 'register')
+router.register(r'task', TaskViewSet, basename = 'task')
 
 
 urlpatterns = [

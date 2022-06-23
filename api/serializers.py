@@ -28,18 +28,21 @@ class RegisterSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ('title', 'description', 'start_date', 'end_date', 'user_id')
+        fields = ('id', 'title', 'description', 'start_date', 'end_date')
+        read_only_fields = ('id')
         extra_kwargs = {
-            'title': {'required': True, 'allow_blank': False},
+            'title': {
+                'required': True, 'allow_blank': False, 'allow_null': True
+                },
             'description':{'allow_null': True},
             'start_date': {'required': True},
             'end_date': {'required': True},
-            'user_id':{'read_only': True},
         }
 
-    def validate_date(self, start_date, end_date):
-        if start_date>end_date:
+    def validate(self, value):
+        super().validate(value)
+        if value.start_date>value.end_date:
             raise serializers.ValidationError(
                 'Start date is greater than end date'
             )
-        return start_date, end_date
+        return value
