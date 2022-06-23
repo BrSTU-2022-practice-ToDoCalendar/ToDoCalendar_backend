@@ -20,6 +20,7 @@ def test_new_user_register(client, django_user_model):
     assert response.data['email'] == data['email']
     assert response.data.get('password') is None
 
+    assert User.objects.get(username=data['username']).email == data['email']
     assert User.objects.count() == 1
 
 
