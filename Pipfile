@@ -13,6 +13,7 @@ drf-yasg = {extras = ["validation"], version = "*"}
 django = "*"
 pytz = "*"
 pytest-django = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
