@@ -32,6 +32,7 @@ def test_blank_refresh_token(client):
     response = client.post(url, data=data)
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.data['refresh'] is not None
 
 
 @pytest.mark.django_db
@@ -43,3 +44,4 @@ def test_invalid_refresh_token(client):
     response = client.post(url, data=data)
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.data['code'] == 'token_not_valid'
