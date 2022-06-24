@@ -8,7 +8,7 @@ from .views import RegisterViewSet, DecoratedToSwaggerTokenRefreshView, TaskView
 
 router = DefaultRouter()
 router.register(r'register', RegisterViewSet, basename='register')
-router.register(r'task', TaskViewSet, basename = 'task')
+router.register(r'task', TaskViewSet, basename='task')
 
 
 urlpatterns = [

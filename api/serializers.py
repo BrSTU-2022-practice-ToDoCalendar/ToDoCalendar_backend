@@ -43,8 +43,13 @@ class TaskSerializer(serializers.ModelSerializer):
 
     def validate(self, value):
         super().validate(value)
-        if value.start_date>value.end_date:
+        start = value['start_date'] if 'start_date' in value else self.instance.start_date
+
+        end = value['end_date'] if 'end_date' in value else self.instance.end_date
+
+        if start >= end:
             raise serializers.ValidationError(
-                'Start date is greater than end date'
+                'Start date is greater than end date.'
             )
+
         return value
