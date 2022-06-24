@@ -28,7 +28,9 @@ class RegisterSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ('id', 'title', 'description', 'start_date', 'end_date', 'user')
+        fields = (
+            'id', 'title', 'description', 'start_date', 'end_date', 'user'
+        )
         read_only_fields = ('id', 'user')
         extra_kwargs = {
             'title': {
