@@ -1,6 +1,7 @@
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import serializers
 
 from .models import User
 from .models import Task
@@ -21,8 +22,8 @@ class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_user_queryset(self):
+    def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
 
-    def custom_create(self, serializer):
+    def perform_create(self, serializer):
         serializer.save(user=self.request.user)

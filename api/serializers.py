@@ -28,7 +28,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ('id', 'title', 'description', 'start_date', 'end_date')
+        fields = ('id', 'title', 'description', 'start_date', 'end_date', 'user')
         read_only_fields = ('id')
         extra_kwargs = {
             'title': {
@@ -37,6 +37,7 @@ class TaskSerializer(serializers.ModelSerializer):
             'description':{'allow_null': True},
             'start_date': {'required': True},
             'end_date': {'required': True},
+            'user': {'write_only': True},
         }
 
     def validate(self, value):
