@@ -13,8 +13,8 @@ urlpatterns = [
     path('v1/', include(router.urls)),
     path('v1/login/', jwt_views.TokenObtainPairView.as_view(),
          name='token_obtain_pair'),
-    path('v1/login/refresh/', DecoratedToSwaggerTokenRefreshView.as_view(),
+    path('v1/refresh-token/', DecoratedToSwaggerTokenRefreshView.as_view(),
          name='token_refresh'),
-    path('v1/login/verify/', jwt_views.TokenVerifyView.as_view(),
+    path('v1/verify-token/', jwt_views.TokenVerifyView.as_view(),
          name='token_verify'),
 ]
