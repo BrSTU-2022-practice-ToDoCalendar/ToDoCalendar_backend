@@ -1,11 +1,13 @@
 from rest_framework import mixins
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import serializers
 from rest_framework_simplejwt import views, serializers
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from .models import User
-from .serializers import RegisterSerializer
+from .models import User, Task
+from .serializers import RegisterSerializer, TaskSerializer
 
 
 class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -43,6 +45,20 @@ class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+
+      
+class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin, mixins.ListModelMixin,
+                  mixins.DestroyModelMixin, viewsets.GenericViewSet):
+
+    serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):

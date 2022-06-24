@@ -3,10 +3,12 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt import views as jwt_views
 
-from .views import RegisterViewSet, DecoratedToSwaggerTokenRefreshView
+from .views import RegisterViewSet, DecoratedToSwaggerTokenRefreshView, TaskViewSet
+
 
 router = DefaultRouter()
 router.register(r'register', RegisterViewSet, basename='register')
+router.register(r'task', TaskViewSet, basename = 'task')
 
 
 urlpatterns = [
