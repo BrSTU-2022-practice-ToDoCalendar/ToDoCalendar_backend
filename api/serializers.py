@@ -49,7 +49,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
         if start >= end:
             raise serializers.ValidationError(
-                'Start date is greater than end date.'
+                {'date': 'End date must be greater than start date.'}
             )
 
         return value
