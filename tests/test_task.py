@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 import pytest
 from django.urls import reverse
 from rest_framework import status
@@ -225,42 +224,21 @@ class TestDeleteTask:
             client,
             set_of_authenticated_accounts_data,
             set_of_tasks_data,
-<<<<<<< Updated upstream
-            convert_date_class_to_iso_format,
-=======
->>>>>>> Stashed changes
     ):
-        url = reverse('task-detail', args=[set_of_tasks_data['task1'].id])
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
         auth_header = (
             'Bearer '
             f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
         )
 
-<<<<<<< Updated upstream
-        response = client.get(
-=======
         response = client.delete(
->>>>>>> Stashed changes
             url,
             HTTP_AUTHORIZATION=auth_header,
         )
 
-<<<<<<< Updated upstream
-        assert response.status_code == status.HTTP_200_OK
-
-        task = set_of_tasks_data['task1']
-        assert task.title == response.data['title']
-        assert task.description == response.data['description']
-        assert task.start_date == response.data['start_date']
-        assert task.end_date == response.data['end_date']
-        assert task.user.id == response.data['user']
-
-        assert task.user == User.objects.get(
-            username=set_of_authenticated_accounts_data['authenticated_account1']['username']
-        )
-=======
         assert response.status_code == status.HTTP_204_NO_CONTENT
->>>>>>> Stashed changes
+        assert Task.objects.filter(id=id).count() == 0
 
     @pytest.mark.django_db
     def test_delete_invalid_task_id(
@@ -268,23 +246,21 @@ class TestDeleteTask:
             client,
             set_of_authenticated_accounts_data,
     ):
-        url = reverse('task-detail', args=[Task.objects.count() + 1])
+        id = Task.objects.count() + 1
+        url = reverse('task-detail', args=[id])
         auth_header = (
             'Bearer '
             f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
         )
 
-<<<<<<< Updated upstream
-        response = client.get(
-=======
         response = client.delete(
->>>>>>> Stashed changes
             url,
             HTTP_AUTHORIZATION=auth_header,
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data['detail'].code == 'not_found'
+        assert Task.objects.filter(id=id).count() == 0
 
     @pytest.mark.django_db
     def test_delete_task_by_another_user(
@@ -293,23 +269,21 @@ class TestDeleteTask:
             set_of_authenticated_accounts_data,
             set_of_tasks_data,
     ):
-        url = reverse('task-detail', args=[set_of_tasks_data['task1'].id])
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
         auth_header = (
             'Bearer '
             f'{set_of_authenticated_accounts_data["authenticated_account2"]["access-token"]}'
         )
 
-<<<<<<< Updated upstream
-        response = client.get(
-=======
         response = client.delete(
->>>>>>> Stashed changes
             url,
             HTTP_AUTHORIZATION=auth_header,
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data['detail'].code == 'not_found'
+        assert Task.objects.filter(id=id).count() == 1
 
     @pytest.mark.django_db
     def test_delete_task_by_unauthorized_user(
@@ -317,13 +291,11 @@ class TestDeleteTask:
             client,
             set_of_tasks_data,
     ):
-        url = reverse('task-detail', args=[set_of_tasks_data['task1'].id])
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
 
-<<<<<<< Updated upstream
-        response = client.get(url)
-=======
         response = client.delete(url)
->>>>>>> Stashed changes
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.data['detail'].code == 'not_authenticated'
+        assert Task.objects.filter(id=id).count() == 1
