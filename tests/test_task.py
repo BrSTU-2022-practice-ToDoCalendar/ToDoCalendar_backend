@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import pytest
 from django.urls import reverse
 from rest_framework import status
@@ -224,7 +225,10 @@ class TestDeleteTask:
             client,
             set_of_authenticated_accounts_data,
             set_of_tasks_data,
+<<<<<<< Updated upstream
             convert_date_class_to_iso_format,
+=======
+>>>>>>> Stashed changes
     ):
         url = reverse('task-detail', args=[set_of_tasks_data['task1'].id])
         auth_header = (
@@ -232,11 +236,16 @@ class TestDeleteTask:
             f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
         )
 
+<<<<<<< Updated upstream
         response = client.get(
+=======
+        response = client.delete(
+>>>>>>> Stashed changes
             url,
             HTTP_AUTHORIZATION=auth_header,
         )
 
+<<<<<<< Updated upstream
         assert response.status_code == status.HTTP_200_OK
 
         task = set_of_tasks_data['task1']
@@ -249,6 +258,9 @@ class TestDeleteTask:
         assert task.user == User.objects.get(
             username=set_of_authenticated_accounts_data['authenticated_account1']['username']
         )
+=======
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+>>>>>>> Stashed changes
 
     @pytest.mark.django_db
     def test_delete_invalid_task_id(
@@ -262,7 +274,11 @@ class TestDeleteTask:
             f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
         )
 
+<<<<<<< Updated upstream
         response = client.get(
+=======
+        response = client.delete(
+>>>>>>> Stashed changes
             url,
             HTTP_AUTHORIZATION=auth_header,
         )
@@ -283,7 +299,11 @@ class TestDeleteTask:
             f'{set_of_authenticated_accounts_data["authenticated_account2"]["access-token"]}'
         )
 
+<<<<<<< Updated upstream
         response = client.get(
+=======
+        response = client.delete(
+>>>>>>> Stashed changes
             url,
             HTTP_AUTHORIZATION=auth_header,
         )
@@ -299,7 +319,11 @@ class TestDeleteTask:
     ):
         url = reverse('task-detail', args=[set_of_tasks_data['task1'].id])
 
+<<<<<<< Updated upstream
         response = client.get(url)
+=======
+        response = client.delete(url)
+>>>>>>> Stashed changes
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.data['detail'].code == 'not_authenticated'
