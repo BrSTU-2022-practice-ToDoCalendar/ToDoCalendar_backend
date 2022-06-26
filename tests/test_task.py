@@ -216,6 +216,7 @@ class TestRetrieveTask:
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.data['detail'].code == 'not_authenticated'
 
+
 class TestDeleteTask:
 
     @pytest.mark.django_db

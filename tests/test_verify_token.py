@@ -21,7 +21,10 @@ def test_verify_correct_token(client, set_of_accounts_data):
     response = client.post(url, data=data)
 
     assert response.status_code == status.HTTP_200_OK
+    assert not response.data
 
+
+@pytest.mark.django_db
 def test_verify_incorrect_token(client):
     url = reverse('token_verify')
     data = {
@@ -32,6 +35,8 @@ def test_verify_incorrect_token(client):
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.data['code'] == 'token_not_valid'
 
+
+@pytest.mark.django_db
 def test_verify_blank_token(client):
     url = reverse('token_verify')
     data = {
