@@ -260,7 +260,6 @@ class TestDeleteTask:
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data['detail'].code == 'not_found'
-        assert Task.objects.filter(id=id).count() == 0
 
     @pytest.mark.django_db
     def test_delete_task_by_another_user(
