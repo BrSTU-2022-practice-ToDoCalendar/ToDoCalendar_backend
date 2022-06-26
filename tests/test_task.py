@@ -216,3 +216,86 @@ class TestRetrieveTask:
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.data['detail'].code == 'not_authenticated'
 
+
+class TestDeleteTask:
+
+    @pytest.mark.django_db
+    def test_delete_task_by_author(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+    ):
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
+        auth_header = (
+            'Bearer '
+            f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
+        )
+
+        response = client.delete(
+            url,
+            HTTP_AUTHORIZATION=auth_header,
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert Task.objects.filter(id=id).count() == 0
+
+    @pytest.mark.django_db
+    def test_delete_invalid_task_id(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+    ):
+        id = Task.objects.count() + 1
+        url = reverse('task-detail', args=[id])
+        auth_header = (
+            'Bearer '
+            f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
+        )
+
+        response = client.delete(
+            url,
+            HTTP_AUTHORIZATION=auth_header,
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.data['detail'].code == 'not_found'
+
+    @pytest.mark.django_db
+    def test_delete_task_by_another_user(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+    ):
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
+        auth_header = (
+            'Bearer '
+            f'{set_of_authenticated_accounts_data["authenticated_account2"]["access-token"]}'
+        )
+
+        response = client.delete(
+            url,
+            HTTP_AUTHORIZATION=auth_header,
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.data['detail'].code == 'not_found'
+        assert Task.objects.filter(id=id).count() == 1
+
+    @pytest.mark.django_db
+    def test_delete_task_by_unauthorized_user(
+            self,
+            client,
+            set_of_tasks_data,
+    ):
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
+
+        response = client.delete(url)
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.data['detail'].code == 'not_authenticated'
+        assert Task.objects.filter(id=id).count() == 1
