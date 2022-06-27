@@ -21,9 +21,11 @@ class TestCreateTask:
             'start_date': '2019-08-24T14:15:22Z',
             'end_date': '2019-10-24T14:15:22Z',
         }
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
         auth_header = (
             'Bearer '
-            f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
+            f'{acc["access-token"]}'
         )
 
         response = client.post(
@@ -59,9 +61,11 @@ class TestCreateTask:
             'start_date': 'string',
             'end_date': '2019-10-24T14:15:22Z',
         }
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
         auth_header = (
             'Bearer '
-            f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
+            f'{acc["access-token"]}'
         )
 
         response = client.post(
@@ -90,9 +94,11 @@ class TestCreateTask:
             'start_date': '2019-08-24T14:15:22Z',
             'end_date': '2019-08-24T14:15:22Z',
         }
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
         auth_header = (
             'Bearer '
-            f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
+            f'{acc["access-token"]}'
         )
 
         response = client.post(
@@ -138,9 +144,11 @@ class TestRetrieveTask:
             convert_date_class_to_iso_format,
     ):
         url = reverse('task-detail', args=[set_of_tasks_data['task1'].id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
         auth_header = (
             'Bearer '
-            f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
+            f'{acc["access-token"]}'
         )
 
         response = client.get(
@@ -158,7 +166,7 @@ class TestRetrieveTask:
         assert task.user.id == response.data['user']
 
         assert task.user == User.objects.get(
-            username=set_of_authenticated_accounts_data['authenticated_account1']['username']
+            username=acc['username']
         )
 
     @pytest.mark.django_db
@@ -169,9 +177,11 @@ class TestRetrieveTask:
             set_of_tasks_data,
     ):
         url = reverse('task-detail', args=[Task.objects.count() + 1])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
         auth_header = (
             'Bearer '
-            f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
+            f'{acc["access-token"]}'
         )
 
         response = client.get(
@@ -190,9 +200,11 @@ class TestRetrieveTask:
             set_of_tasks_data,
     ):
         url = reverse('task-detail', args=[set_of_tasks_data['task1'].id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account2']
         auth_header = (
             'Bearer '
-            f'{set_of_authenticated_accounts_data["authenticated_account2"]["access-token"]}'
+            f'{acc["access-token"]}'
         )
 
         response = client.get(
@@ -228,9 +240,11 @@ class TestDeleteTask:
     ):
         id = set_of_tasks_data['task1'].id
         url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
         auth_header = (
             'Bearer '
-            f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
+            f'{acc["access-token"]}'
         )
 
         response = client.delete(
@@ -249,9 +263,11 @@ class TestDeleteTask:
     ):
         id = Task.objects.count() + 1
         url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
         auth_header = (
             'Bearer '
-            f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
+            f'{acc["access-token"]}'
         )
 
         response = client.delete(
@@ -271,9 +287,11 @@ class TestDeleteTask:
     ):
         id = set_of_tasks_data['task1'].id
         url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account2']
         auth_header = (
             'Bearer '
-            f'{set_of_authenticated_accounts_data["authenticated_account2"]["access-token"]}'
+            f'{acc["access-token"]}'
         )
 
         response = client.delete(

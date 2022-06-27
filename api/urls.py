@@ -1,10 +1,14 @@
 from django.urls import include
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt import views as jwt_views
+from rest_framework_simplejwt import views
 
-from .views import RegisterViewSet, DecoratedToSwaggerTokenRefreshView, TaskViewSet\
-    , DecoratedToSwaggerTokenVerifyView
+from .views import (
+    RegisterViewSet,
+    DecoratedToSwaggerTokenRefreshView,
+    TaskViewSet,
+    DecoratedToSwaggerTokenVerifyView
+)
 
 
 router = DefaultRouter()
@@ -14,7 +18,7 @@ router.register(r'task', TaskViewSet, basename='task')
 
 urlpatterns = [
     path('v1/', include(router.urls)),
-    path('v1/login/', jwt_views.TokenObtainPairView.as_view(),
+    path('v1/login/', views.TokenObtainPairView.as_view(),
          name='token_obtain_pair'),
     path('v1/refresh-token/', DecoratedToSwaggerTokenRefreshView.as_view(),
          name='token_refresh'),

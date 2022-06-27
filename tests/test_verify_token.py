@@ -12,12 +12,12 @@ def test_verify_correct_token(client, set_of_accounts_data):
         'password': set_of_accounts_data['account1']['password'],
     }
     response = client.post(url, data=data)
-    
+
     url = reverse('token_verify')
     data = {
         'token': response.data['access'],
     }
-    
+
     response = client.post(url, data=data)
 
     assert response.status_code == status.HTTP_200_OK

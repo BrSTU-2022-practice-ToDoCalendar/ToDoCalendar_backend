@@ -1,7 +1,6 @@
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import serializers
 from rest_framework_simplejwt import views, serializers
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -46,7 +45,7 @@ class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
 
-      
+
 class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
                   mixins.UpdateModelMixin, mixins.ListModelMixin,
                   mixins.DestroyModelMixin, viewsets.GenericViewSet):
@@ -79,7 +78,7 @@ class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
                 description='Bad request',
                 examples={
                     'application/json': {
-                        'refresh': ['This field may not be blank.',],
+                        'refresh': ['This field may not be blank.'],
                     },
                 },
                 schema=serializers.TokenRefreshSerializer,
@@ -99,6 +98,7 @@ class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
+
 class DecoratedToSwaggerTokenVerifyView(views.TokenVerifyView):
 
     @swagger_auto_schema(
@@ -115,7 +115,7 @@ class DecoratedToSwaggerTokenVerifyView(views.TokenVerifyView):
                 description='Bad request',
                 examples={
                     'application/json': {
-                        'token': ['This field may not be blank.',],
+                        'token': ['This field may not be blank.'],
                     },
                 },
                 schema=serializers.TokenVerifySerializer,
