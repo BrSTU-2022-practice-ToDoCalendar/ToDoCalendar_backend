@@ -98,3 +98,46 @@ class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+
+class DecoratedToSwaggerTokenObtainPairView(views.TokenObtainPairView):
+
+    @swagger_auto_schema(
+        responses={
+            '200': openapi.Response(
+                description='Ok',
+                examples={
+                    'application/json': {
+                        'username': 'string',
+                        'password': 'string',
+                    },
+                },
+                schema=serializers.TokenObtainPairSerializer,
+            ),
+            '400': openapi.Response(
+                description='Bad request',
+                examples={
+                    'application/json': {
+                        'username': [
+                            'This field may not be blank.',
+                        ],
+                        'password': [
+                            'This field may not be blank.',
+                        ],
+                    },
+                },
+                schema=serializers.TokenObtainPairSerializer,
+            ),
+            '401': openapi.Response(
+                description='Unauthorized',
+                examples={
+                    'application/json': {
+                        "detail": "No active account found with the given '\
+                            'credentials",
+                    },
+                },
+                schema=serializers.TokenObtainPairSerializer,
+            )
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
