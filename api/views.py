@@ -98,3 +98,39 @@ class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+
+class DecoratedToSwaggerTokenVerifyView(views.TokenVerifyView):
+
+    @swagger_auto_schema(
+        responses={
+            '200': openapi.Response(
+                description='Ok',
+                examples={
+                    'application/json': {
+                    },
+                },
+                schema=serializers.TokenVerifySerializer,
+            ),
+            '400': openapi.Response(
+                description='Bad request',
+                examples={
+                    'application/json': {
+                        'token': ['This field may not be blank.',],
+                    },
+                },
+                schema=serializers.TokenVerifySerializer,
+            ),
+            '401': openapi.Response(
+                description='Unauthorized',
+                examples={
+                    'application/json': {
+                        "detail": "Token is invalid or expired",
+                        "code": "token_not_valid",
+                    },
+                },
+                schema=serializers.TokenVerifySerializer,
+            )
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
