@@ -87,8 +87,8 @@ class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
                 description='Unauthorized',
                 examples={
                     'application/json': {
-                        "detail": "Token is invalid or expired",
-                        "code": "token_not_valid",
+                        'detail': 'Token is invalid or expired',
+                        'code': 'token_not_valid',
                     },
                 },
                 schema=serializers.TokenRefreshSerializer,
@@ -100,7 +100,8 @@ class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
 
 
 class DecoratedToSwaggerTokenVerifyView(views.TokenVerifyView):
-		@swagger_auto_schema(
+
+    @swagger_auto_schema(
         responses={
             '200': openapi.Response(
                 description='Ok',
@@ -108,26 +109,26 @@ class DecoratedToSwaggerTokenVerifyView(views.TokenVerifyView):
                     'application/json': {},
                 },
                 schema=serializers.TokenVerifySerializer,
-						),
+            ),
             '400': openapi.Response(
                 description='Bad request',
                 examples={
-                    'application/json': { 
-												'token': ['This field may not be blank.'],
+                    'application/json': {
+                        'token': ['This field may not be blank.'],
                     },
                 },
                 schema=serializers.TokenVerifySerializer,
-						),
+            ),
             '401': openapi.Response(
                 description='Unauthorized',
                 examples={
                     'application/json': {
-										 "detail": "Token is invalid or expired",
-                        "code": "token_not_valid",
+                        'detail': 'Token is invalid or expired',
+                        'code': 'token_not_valid',
                     },
                 },
                 schema=serializers.TokenVerifySerializer,
-						)
+            )
         }
     )
     def post(self, request, *args, **kwargs):
@@ -166,8 +167,8 @@ class DecoratedToSwaggerTokenObtainPairView(views.TokenObtainPairView):
                 description='Unauthorized',
                 examples={
                     'application/json': {
-                        "detail": "No active account found with the given '\
-                            'credentials",
+                        'detail': ('No active account found with the '
+                                   'given credentials'),
                     },
                 },
                 schema=serializers.TokenObtainPairSerializer,
