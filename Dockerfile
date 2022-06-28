@@ -4,7 +4,9 @@ ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
 WORKDIR /app
-COPY . /app/
+COPY Pipfile Pipfile.lock /app/
 
 RUN pip install pipenv \
     && pipenv install --deploy --system --ignore-pipfile
+
+COPY . /app/
