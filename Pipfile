@@ -15,6 +15,7 @@ pytz = "*"
 pytest-django = "*"
 django-cors-headers = "*"
 pytest = "*"
+pre-commit = "*"
 
 [dev-packages]
 
