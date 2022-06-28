@@ -253,7 +253,7 @@ class TestDeleteTask:
         )
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        assert Task.objects.filter(id=id).count() == 0
+        assert not Task.objects.filter(id=id).exists()
 
     @pytest.mark.django_db
     def test_delete_invalid_task_id(
@@ -301,7 +301,7 @@ class TestDeleteTask:
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.data['detail'].code == 'not_found'
-        assert Task.objects.filter(id=id).count() == 1
+        assert Task.objects.get(id=id)
 
     @pytest.mark.django_db
     def test_delete_task_by_unauthorized_user(
@@ -316,4 +316,4 @@ class TestDeleteTask:
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.data['detail'].code == 'not_authenticated'
-        assert Task.objects.filter(id=id).count() == 1
+        assert Task.objects.get(id=id)
