@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
+
 from .models import Task
 
 
@@ -36,16 +37,18 @@ class TaskSerializer(serializers.ModelSerializer):
             'title': {
                 'required': True, 'allow_blank': False, 'allow_null': True
                 },
-            'description':{'allow_null': True},
+            'description': {'allow_null': True},
             'start_date': {'required': True},
             'end_date': {'required': True},
         }
 
     def validate(self, value):
         super().validate(value)
-        start = value['start_date'] if 'start_date' in value else self.instance.start_date
+        start = (value['start_date'] if 'start_date' in value
+                 else self.instance.start_date)
 
-        end = value['end_date'] if 'end_date' in value else self.instance.end_date
+        end = (value['end_date'] if 'end_date' in value
+               else self.instance.end_date)
 
         if start >= end:
             raise serializers.ValidationError(
