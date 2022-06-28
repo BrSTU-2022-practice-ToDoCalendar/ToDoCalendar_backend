@@ -316,6 +316,91 @@ class TestDeleteTask:
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.data['detail'].code == 'not_authenticated'
+        assert Task.objects.filter(id=id).count() == 1
+
+
+class TestListTask:
+
+    @pytest.mark.django_db
+    def test_list_task_by_author(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            convert_date_class_to_iso_format,
+            set_of_tasks_data,
+            set_of_accounts_data,
+    ):
+        url = reverse('task-list')
+        
+        account = set_of_authenticated_accounts_data["authenticated_account1"]
+        auth_header = (
+            'Bearer '
+            f'{account["access-token"]}'
+        )
+
+        response = client.get(
+            url,
+            HTTP_AUTHORIZATION=auth_header,
+        )
+        
+        tasks = Task.objects.filter(
+            user__username = account['username']
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        assert tasks.count() == len(response.data)
+
+        for resp in response.data:
+            task = tasks.get(id = resp['id'])
+
+            assert convert_date_class_to_iso_format(task.start_date) == resp['start_date']
+            assert convert_date_class_to_iso_format(task.end_date) == resp['end_date']
+            assert task.description == resp['description']
+            assert task.title == resp['title']
+            assert task.user.id == resp['user']
+            assert account['username'] == task.user.username
+            
+    @pytest.mark.django_db
+    def test_list_task_by_unauthorized_user(
+            self,
+            client,
+    ):
+        url = reverse('task-list')
+
+        response = client.get(url)
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.data['detail'].code == 'not_authenticated'
+    
+    @pytest.mark.django_db
+    def test_list_task_with_2_users(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            convert_date_class_to_iso_format,
+            set_of_tasks_data,
+            set_of_accounts_data,
+    ):
+        url = reverse('task-list')
+        account = set_of_authenticated_accounts_data["authenticated_account1"]
+        auth_header_for_author = (
+            'Bearer '
+            f'{account["access-token"]}'
+        )
+        response = client.get(
+            url,
+            HTTP_AUTHORIZATION=auth_header_for_author,
+        )
+
+        second_account = set_of_authenticated_accounts_data["authenticated_account2"]
+        second_user_tasks = Task.objects.filter(
+            user__username=second_account['username']
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        
+        for resp in response.data:
+            assert not second_user_tasks.filter(id = resp['id']).exists()
         assert Task.objects.get(id=id)
 
 
