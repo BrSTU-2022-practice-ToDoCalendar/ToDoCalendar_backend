@@ -100,6 +100,41 @@ class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
 
 
 class DecoratedToSwaggerTokenVerifyView(views.TokenVerifyView):
+		@swagger_auto_schema(
+        responses={
+            '200': openapi.Response(
+                description='Ok',
+                examples={
+                    'application/json': {},
+                },
+                schema=serializers.TokenVerifySerializer,
+						),
+            '400': openapi.Response(
+                description='Bad request',
+                examples={
+                    'application/json': { 
+												'token': ['This field may not be blank.'],
+                    },
+                },
+                schema=serializers.TokenVerifySerializer,
+						),
+            '401': openapi.Response(
+                description='Unauthorized',
+                examples={
+                    'application/json': {
+										 "detail": "Token is invalid or expired",
+                        "code": "token_not_valid",
+                    },
+                },
+                schema=serializers.TokenVerifySerializer,
+						)
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+class DecoratedToSwaggerTokenObtainPairView(views.TokenObtainPairView):
 
     @swagger_auto_schema(
         responses={
@@ -107,28 +142,35 @@ class DecoratedToSwaggerTokenVerifyView(views.TokenVerifyView):
                 description='Ok',
                 examples={
                     'application/json': {
+                        'username': 'string',
+                        'password': 'string',
                     },
                 },
-                schema=serializers.TokenVerifySerializer,
+                schema=serializers.TokenObtainPairSerializer,
             ),
             '400': openapi.Response(
                 description='Bad request',
                 examples={
                     'application/json': {
-                        'token': ['This field may not be blank.'],
+                        'username': [
+                            'This field may not be blank.',
+                        ],
+                        'password': [
+                            'This field may not be blank.',
+                        ],
                     },
                 },
-                schema=serializers.TokenVerifySerializer,
+                schema=serializers.TokenObtainPairSerializer,
             ),
             '401': openapi.Response(
                 description='Unauthorized',
                 examples={
                     'application/json': {
-                        "detail": "Token is invalid or expired",
-                        "code": "token_not_valid",
+                        "detail": "No active account found with the given '\
+                            'credentials",
                     },
                 },
-                schema=serializers.TokenVerifySerializer,
+                schema=serializers.TokenObtainPairSerializer,
             )
         }
     )
