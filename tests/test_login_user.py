@@ -5,44 +5,40 @@ from rest_framework import status
 
 
 @pytest.mark.django_db
-def test_verify_correct_token(client, set_of_accounts_data):
+def test_correct_user_login(client, set_of_accounts_data):
     url = reverse('token_obtain_pair')
     data = {
         'username': set_of_accounts_data['account1']['username'],
         'password': set_of_accounts_data['account1']['password'],
     }
     response = client.post(url, data=data)
-
-    url = reverse('token_verify')
-    data = {
-        'token': response.data['access'],
-    }
-
-    response = client.post(url, data=data)
-
     assert response.status_code == status.HTTP_200_OK
-    assert not response.data
+    assert response.data['access'] is not None
+    assert response.data['refresh'] is not None
 
 
 @pytest.mark.django_db
-def test_verify_incorrect_token(client):
-    url = reverse('token_verify')
+def test_invalid_user_login(client):
+    url = reverse('token_obtain_pair')
     data = {
-        'token': 'invalid token',
+        'username': '2testacc2',
+        'password': '1234',
+
     }
     response = client.post(url, data=data)
-
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    assert response.data['code'] == 'token_not_valid'
+    assert response.data['detail'].code == 'no_active_account'
 
 
 @pytest.mark.django_db
-def test_verify_blank_token(client):
-    url = reverse('token_verify')
+def test_blank_user_login(client):
+    url = reverse('token_obtain_pair')
     data = {
-        'token': '',
+        'username': ' ',
+        'password': ' ',
+
     }
     response = client.post(url, data=data)
-
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.data['token'] is not None
+    assert response.data['username'][0].code == 'blank'
+    assert response.data['password'][0].code == 'blank'
