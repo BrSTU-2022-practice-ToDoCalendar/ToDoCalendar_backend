@@ -7,7 +7,11 @@ User = get_user_model()
 
 class Task(models.Model):
     title = models.CharField(verbose_name='title', max_length=255)
-    description = models.TextField(verbose_name='description', blank=True, null=True)
+    description = models.TextField(
+        verbose_name='description',
+        blank=True,
+        null=True
+    )
     start_date = models.DateTimeField(verbose_name='start date')
     end_date = models.DateTimeField(verbose_name='end date')
 

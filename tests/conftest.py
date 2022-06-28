@@ -2,7 +2,6 @@ import datetime
 
 import pytest
 from django.urls import reverse
-from rest_framework.authtoken.models import Token
 
 from api.models import User, Task
 from api.serializers import RegisterSerializer
