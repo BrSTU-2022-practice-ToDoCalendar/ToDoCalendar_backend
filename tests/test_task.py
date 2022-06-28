@@ -317,3 +317,429 @@ class TestDeleteTask:
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.data['detail'].code == 'not_authenticated'
         assert Task.objects.get(id=id)
+
+
+class TestUpdateTask:
+
+    @pytest.mark.django_db
+    def test_correct_patch_all_fields_by_author(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+            convert_date_class_to_iso_format,
+    ):
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
+        auth_header = (f'Bearer {acc["access-token"]}')
+        data = {
+            'title': 'new_title',
+            'description': 'new_description',
+            'start_date': '2000-08-24T14:15:22Z',
+            'end_date': '2000-10-24T14:15:22Z',
+        }
+
+        response = client.patch(
+            url,
+            data=data,
+            HTTP_AUTHORIZATION=auth_header,
+            content_type='application/json',
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        task = Task.objects.get(id=id)
+
+        assert task.title == data['title']
+        assert task.description == data['description']
+
+        start_date = convert_date_class_to_iso_format(task.start_date)
+        assert start_date == data['start_date']
+
+        end_date = convert_date_class_to_iso_format(task.end_date)
+        assert end_date == data['end_date']
+
+        assert task.user.username == acc['username']
+
+    @pytest.mark.django_db
+    def test_correct_patch_all_fields_by_another_user(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+            convert_date_class_to_iso_format,
+    ):
+        id = set_of_tasks_data['task3'].id
+        url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
+        auth_header = (f'Bearer {acc["access-token"]}')
+        data = {
+            'title': 'new_title',
+            'description': 'new_description',
+            'start_date': '2000-08-24T14:15:22Z',
+            'end_date': '2000-10-24T14:15:22Z',
+        }
+
+        response = client.patch(
+            url,
+            data=data,
+            HTTP_AUTHORIZATION=auth_header,
+            content_type='application/json',
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.data['detail'].code == 'not_found'
+
+        task = Task.objects.get(id=id)
+
+        assert task.title != data['title']
+        assert task.description != data['description']
+
+        start_date = convert_date_class_to_iso_format(task.start_date)
+        assert start_date != data['start_date']
+
+        end_date = convert_date_class_to_iso_format(task.end_date)
+        assert end_date != data['end_date']
+
+    @pytest.mark.django_db
+    def test_correct_patch_all_fields_by_unauthorized_user(
+            self,
+            client,
+            set_of_tasks_data,
+            convert_date_class_to_iso_format,
+    ):
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
+
+        data = {
+            'title': 'new_title',
+            'description': 'new_description',
+            'start_date': '2000-08-24T14:15:22Z',
+            'end_date': '2000-10-24T14:15:22Z',
+        }
+
+        response = client.patch(
+            url,
+            data=data,
+            content_type='application/json',
+        )
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.data['detail'].code == 'not_authenticated'
+
+        task = Task.objects.get(id=id)
+
+        assert task.title != data['title']
+        assert task.description != data['description']
+
+        start_date = convert_date_class_to_iso_format(task.start_date)
+        assert start_date != data['start_date']
+
+        end_date = convert_date_class_to_iso_format(task.end_date)
+        assert end_date != data['end_date']
+
+    @pytest.mark.django_db
+    def test_invalid_patch_all_fields_by_authorized_user(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+    ):
+        id = Task.objects.count() + 1
+        url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
+        auth_header = (f'Bearer {acc["access-token"]}')
+        data = {
+            'title': 'new_title',
+            'description': 'new_description',
+            'start_date': '2000-08-24T14:15:22Z',
+            'end_date': '2000-10-24T14:15:22Z',
+        }
+
+        response = client.patch(
+            url,
+            data=data,
+            HTTP_AUTHORIZATION=auth_header,
+            content_type='application/json',
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert response.data['detail'].code == 'not_found'
+
+    @pytest.mark.django_db
+    def test_invalid_patch_all_fields_with_same_startdate_enddate_by_author(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+            convert_date_class_to_iso_format,
+    ):
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
+        auth_header = (f'Bearer {acc["access-token"]}')
+        data = {
+            'title': 'new_title',
+            'description': 'new_description',
+            'start_date': '2000-08-24T14:15:22Z',
+            'end_date': '2000-08-24T14:15:22Z',
+        }
+
+        response = client.patch(
+            url,
+            data=data,
+            HTTP_AUTHORIZATION=auth_header,
+            content_type='application/json',
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data['date'][0].code == 'invalid'
+
+        task = Task.objects.get(id=id)
+
+        assert task.title != data['title']
+        assert task.description != data['description']
+
+        start_date = convert_date_class_to_iso_format(task.start_date)
+        assert start_date != data['start_date']
+
+        end_date = convert_date_class_to_iso_format(task.end_date)
+        assert end_date != data['end_date']
+
+        assert task.user.username == acc['username']
+
+    @pytest.mark.django_db
+    def test_correct_patch_title_field_by_author(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+            convert_date_class_to_iso_format,
+    ):
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
+        auth_header = (f'Bearer {acc["access-token"]}')
+        data = {
+            'title': 'new_title',
+        }
+
+        response = client.patch(
+            url,
+            data=data,
+            HTTP_AUTHORIZATION=auth_header,
+            content_type='application/json',
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        task = Task.objects.get(id=id)
+
+        assert task.title == data['title']
+        assert task.description == set_of_tasks_data['task1'].description
+
+        start_date = convert_date_class_to_iso_format(task.start_date)
+        assert start_date == set_of_tasks_data['task1'].start_date
+
+        end_date = convert_date_class_to_iso_format(task.end_date)
+        assert end_date == set_of_tasks_data['task1'].end_date
+        assert task.user.username == acc['username']
+
+    @pytest.mark.django_db
+    def test_correct_patch_description_field_by_author(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+            convert_date_class_to_iso_format,
+    ):
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
+        auth_header = (f'Bearer {acc["access-token"]}')
+        data = {
+            'description': 'new_description',
+        }
+
+        response = client.patch(
+            url,
+            data=data,
+            HTTP_AUTHORIZATION=auth_header,
+            content_type='application/json',
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        task = Task.objects.get(id=id)
+
+        assert task.title == set_of_tasks_data['task1'].title
+
+        assert task.description == data['description']
+
+        start_date = convert_date_class_to_iso_format(task.start_date)
+        assert start_date == set_of_tasks_data['task1'].start_date
+
+        end_date = convert_date_class_to_iso_format(task.end_date)
+        assert end_date == set_of_tasks_data['task1'].end_date
+        assert task.user.username == acc['username']
+
+    @pytest.mark.django_db
+    def test_correct_patch_startdate_field_by_author(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+            convert_date_class_to_iso_format,
+    ):
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
+        auth_header = (f'Bearer {acc["access-token"]}')
+        data = {
+            'start_date': '2000-12-01T00:00:00Z',
+        }
+
+        response = client.patch(
+            url,
+            data=data,
+            HTTP_AUTHORIZATION=auth_header,
+            content_type='application/json',
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        task = Task.objects.get(id=id)
+
+        assert task.title == set_of_tasks_data['task1'].title
+        assert task.description == set_of_tasks_data['task1'].description
+
+        start_date = convert_date_class_to_iso_format(task.start_date)
+        assert start_date == data['start_date']
+
+        end_date = convert_date_class_to_iso_format(task.end_date)
+        assert end_date == set_of_tasks_data['task1'].end_date
+        assert task.user.username == acc['username']
+
+    @pytest.mark.django_db
+    def test_correct_patch_enddate_field_by_author(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+            convert_date_class_to_iso_format,
+    ):
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
+        auth_header = (f'Bearer {acc["access-token"]}')
+        data = {
+            'end_date': '2020-12-01T00:00:00Z',
+        }
+
+        response = client.patch(
+            url,
+            data=data,
+            HTTP_AUTHORIZATION=auth_header,
+            content_type='application/json',
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        task = Task.objects.get(id=id)
+
+        assert task.title == set_of_tasks_data['task1'].title
+        assert task.description == set_of_tasks_data['task1'].description
+        start_date = convert_date_class_to_iso_format(task.start_date)
+        assert start_date == set_of_tasks_data['task1'].start_date
+
+        end_date = convert_date_class_to_iso_format(task.end_date)
+        assert end_date == data['end_date']
+
+        assert task.user.username == acc['username']
+
+    @pytest.mark.django_db
+    def test_invalid_patch_startdate_field_by_author(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+            convert_date_class_to_iso_format,
+    ):
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
+        auth_header = (f'Bearer {acc["access-token"]}')
+        data = {
+            'start_date': '2020-12-01T00:00:00Z',
+        }
+
+        response = client.patch(
+            url,
+            data=data,
+            HTTP_AUTHORIZATION=auth_header,
+            content_type='application/json',
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data['date'][0].code == 'invalid'
+
+        task = Task.objects.get(id=id)
+
+        assert task.title == set_of_tasks_data['task1'].title
+        assert task.description == set_of_tasks_data['task1'].description
+
+        start_date = convert_date_class_to_iso_format(task.start_date)
+        assert start_date != data['start_date']
+
+        end_date = convert_date_class_to_iso_format(task.end_date)
+        assert end_date == set_of_tasks_data['task1'].end_date
+        assert task.user.username == acc['username']
+
+    @pytest.mark.django_db
+    def test_invalid_patch_enddate_field_by_author(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+            convert_date_class_to_iso_format,
+    ):
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
+        auth_header = (f'Bearer {acc["access-token"]}')
+        data = {
+            'end_date': '2000-12-01T00:00:00Z',
+        }
+
+        response = client.patch(
+            url,
+            data=data,
+            HTTP_AUTHORIZATION=auth_header,
+            content_type='application/json',
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.data['date'][0].code == 'invalid'
+
+        task = Task.objects.get(id=id)
+
+        assert task.title == set_of_tasks_data['task1'].title
+        assert task.description == set_of_tasks_data['task1'].description
+        start_date = convert_date_class_to_iso_format(task.start_date)
+        assert start_date == set_of_tasks_data['task1'].start_date
+
+        end_date = convert_date_class_to_iso_format(task.end_date)
+        assert end_date != data['end_date']
+
+        assert task.user.username == acc['username']
