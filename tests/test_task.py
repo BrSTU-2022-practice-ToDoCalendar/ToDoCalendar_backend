@@ -313,9 +313,11 @@ class TestListTask:
             set_of_accounts_data,
     ):
         url = reverse('task-list')
+        
+        account = set_of_authenticated_accounts_data["authenticated_account1"]
         auth_header = (
             'Bearer '
-            f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
+            f'{account["access-token"]}'
         )
 
         response = client.get(
@@ -323,9 +325,8 @@ class TestListTask:
             HTTP_AUTHORIZATION=auth_header,
         )
         
-        account = set_of_accounts_data['account1']
         tasks = Task.objects.filter(
-            user=User.objects.get(username=account['username']).id
+            user__username = account['username']
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -363,21 +364,22 @@ class TestListTask:
             set_of_accounts_data,
     ):
         url = reverse('task-list')
+        account = set_of_authenticated_accounts_data["authenticated_account1"]
         auth_header_for_author = (
             'Bearer '
-            f'{set_of_authenticated_accounts_data["authenticated_account1"]["access-token"]}'
+            f'{account["access-token"]}'
         )
         response = client.get(
             url,
             HTTP_AUTHORIZATION=auth_header_for_author,
         )
 
-        second_account = set_of_accounts_data['account2']
+        second_account = set_of_authenticated_accounts_data["authenticated_account2"]
         second_user_tasks = Task.objects.filter(
-            user=User.objects.get(username=second_account['username']).id
+            user__username=second_account['username']
         )
 
         assert response.status_code == status.HTTP_200_OK
         
         for resp in response.data:
-            assert second_user_tasks.filter(id = resp['id']).exists
+            assert not second_user_tasks.filter(id = resp['id']).exists()
