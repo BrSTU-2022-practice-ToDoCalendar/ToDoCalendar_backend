@@ -30,7 +30,13 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = (
-            'id', 'title', 'description', 'start_date', 'end_date', 'user'
+            'id',
+            'title',
+            'description',
+            'start_date',
+            'end_date',
+            'completed',
+            'user',
         )
         read_only_fields = ('id', 'user')
         extra_kwargs = {
