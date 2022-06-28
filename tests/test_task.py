@@ -757,6 +757,45 @@ class TestUpdateTask:
         assert task.user.username == acc['username']
 
     @pytest.mark.django_db
+    def test_correct_patch_completed_field_by_author(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+            convert_date_class_to_iso_format,
+    ):
+        id = set_of_tasks_data['task1'].id
+        url = reverse('task-detail', args=[id])
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
+        auth_header = (f'Bearer {acc["access-token"]}')
+        data = {
+            'completed': True,
+        }
+
+        response = client.patch(
+            url,
+            data=data,
+            HTTP_AUTHORIZATION=auth_header,
+            content_type='application/json',
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        task = Task.objects.get(id=id)
+
+        assert task.title == set_of_tasks_data['task1'].title
+        assert task.description == set_of_tasks_data['task1'].description
+        start_date = convert_date_class_to_iso_format(task.start_date)
+        assert start_date == set_of_tasks_data['task1'].start_date
+        end_date = convert_date_class_to_iso_format(task.end_date)
+        assert end_date == set_of_tasks_data['task1'].end_date
+
+        assert task.completed == data['completed']
+
+        assert task.user.username == acc['username']
+
+    @pytest.mark.django_db
     def test_invalid_patch_startdate_field_by_author(
             self,
             client,
