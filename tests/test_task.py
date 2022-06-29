@@ -873,9 +873,8 @@ class TestUpdateTask:
 
         assert task.user.username == acc['username']
     
-    # Method PUT
     @pytest.mark.django_db
-    def test_correct_patch_all_fields_by_author(
+    def test_correct_put_all_fields_by_author(
             self,
             client,
             set_of_authenticated_accounts_data,
@@ -892,6 +891,7 @@ class TestUpdateTask:
             'description': 'new_description',
             'start_date': '2000-08-24T14:15:22Z',
             'end_date': '2000-10-24T14:15:22Z',
+            'completed': False,
         }
 
         response = client.put(
@@ -919,7 +919,7 @@ class TestUpdateTask:
         assert task.completed == False
 
     @pytest.mark.django_db
-    def test_correct_patch_all_fields_by_another_user(
+    def test_correct_put_all_fields_by_another_user(
             self,
             client,
             set_of_authenticated_accounts_data,
@@ -936,6 +936,7 @@ class TestUpdateTask:
             'description': 'new_description',
             'start_date': '2000-08-24T14:15:22Z',
             'end_date': '2000-10-24T14:15:22Z',
+            'completed': False,
         }
 
         response = client.put(
@@ -960,7 +961,7 @@ class TestUpdateTask:
         assert end_date != data['end_date']
 
     @pytest.mark.django_db
-    def test_correct_patch_all_fields_by_unauthorized_user(
+    def test_correct_put_all_fields_by_unauthorized_user(
             self,
             client,
             set_of_tasks_data,
@@ -974,6 +975,7 @@ class TestUpdateTask:
             'description': 'new_description',
             'start_date': '2000-08-24T14:15:22Z',
             'end_date': '2000-10-24T14:15:22Z',
+            'completed': False,
         }
 
         response = client.put(
@@ -997,7 +999,7 @@ class TestUpdateTask:
         assert end_date != data['end_date']
 
     @pytest.mark.django_db
-    def test_invalid_patch_all_fields_by_authorized_user(
+    def test_invalid_put_all_fields_by_authorized_user(
             self,
             client,
             set_of_authenticated_accounts_data,
@@ -1013,6 +1015,7 @@ class TestUpdateTask:
             'description': 'new_description',
             'start_date': '2000-08-24T14:15:22Z',
             'end_date': '2000-10-24T14:15:22Z',
+            'completed': False,
         }
 
         response = client.put(
@@ -1026,7 +1029,7 @@ class TestUpdateTask:
         assert response.data['detail'].code == 'not_found'
 
     @pytest.mark.django_db
-    def test_invalid_patch_all_fields_with_same_startdate_enddate_by_author(
+    def test_invalid_put_all_fields_with_same_startdate_enddate_by_author(
             self,
             client,
             set_of_authenticated_accounts_data,
@@ -1043,6 +1046,7 @@ class TestUpdateTask:
             'description': 'new_description',
             'start_date': '2000-08-24T14:15:22Z',
             'end_date': '2000-08-24T14:15:22Z',
+            'completed': True,
         }
 
         response = client.put(
