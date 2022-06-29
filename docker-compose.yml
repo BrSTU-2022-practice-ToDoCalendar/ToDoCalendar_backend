@@ -16,7 +16,7 @@ services:
     volumes:
       - .:/app
     ports:
-      - "8000:8000"
+      - "7990:8000"
     env_file: .env-deploy
     command: sh /app/migrations.sh
     depends_on:
