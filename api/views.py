@@ -267,7 +267,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                     'application/json': {
                         'id': 1,
                         'title': "Hello",
-                        'description': 0,
+                        'description': 'string',
                         'start_date': "2022-06-30T00:00:00Z",
                         'end_date': "2023-07-30T20:30:00Z",
                         'user': 1
