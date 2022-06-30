@@ -51,6 +51,36 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        responses={
+            '200': openapi.Response(
+                description='Ok',
+                examples={
+                    'application/json': {
+                        'id': 0,
+                        'title': 'string',
+                        'description': 'string',
+                        'start_date': '2019-08-24T14:15:22Z',
+                        'end_date': '2019-08-24T14:15:22Z',
+                        'completed': True,
+                        'user': 0,
+                    }
+                },
+            ),
+            '401': openapi.Response(
+                description='Unauthorized',
+                examples={
+                    'application/json': {
+                        'detail':
+                            'Authentication credentials were not provided.'
+                    },
+                },
+            ),
+        }
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
 
