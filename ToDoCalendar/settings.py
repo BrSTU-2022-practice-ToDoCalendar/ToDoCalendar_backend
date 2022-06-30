@@ -11,10 +11,10 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
 from pathlib import Path
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 from datetime import timedelta
 
-#load_dotenv()
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -88,9 +88,9 @@ WSGI_APPLICATION = 'ToDoCalendar.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('POSTGRES_DB') or 'api_task',
-        'USER': os.getenv('POSTGRES_USER') or 'dimam',
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD') or '8214',
+        'NAME': os.getenv('POSTGRES_DB') or 'todocalendar',
+        'USER': os.getenv('POSTGRES_USER') or 'todocalendar',
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD') or '1234',
         'HOST': os.getenv('POSTGRES_HOST') or 'localhost',
         'PORT': os.getenv('POSTGRES_PORT') or '5432',
     }
