@@ -66,15 +66,8 @@ class TaskViewSet(viewsets.ModelViewSet):
                 description='Unauthorized',
                 examples={
                     'application/json': {
-                        'detail': 'Given token not valid for any token type',
-                        'code': 'token_not_valid',
-                        'messages': [
-                            {
-                                'token_class': 'AccessToken',
-                                'token_type': 'access',
-                                'message': 'Token is invalid or expired',
-                            },
-                        ]
+                        'detail':
+                            'Authentication credentials were not provided.'
                     },
                 },
             ),
@@ -90,6 +83,56 @@ class TaskViewSet(viewsets.ModelViewSet):
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        responses={
+            '200': openapi.Response(
+                description='Ok',
+                examples={
+                    'application/json': {
+                        'id': 0,
+                        'title': 'string',
+                        'description': 'string',
+                        'start_date': '2019-08-24T14:15:22Z',
+                        'end_date': '2019-08-24T14:15:22Z',
+                        'completed': True,
+                        'user': 0,
+                    }
+                },
+                schema=TaskSerializer,
+            ),
+            '400': openapi.Response(
+                description='Bad request',
+                examples={
+                    'application/json': {
+                        'title': [
+                            'This field may not be blank.',
+                        ],
+                    },
+                },
+                schema=TaskSerializer,
+            ),
+            '401': openapi.Response(
+                description='Unauthorized',
+                examples={
+                    'application/json': {
+                        'detail':
+                            'Authentication credentials were not provided.'
+                    },
+                },
+            ),
+            '404': openapi.Response(
+                description='Not found',
+                examples={
+                    'application/json': {
+                        'detail': 'Not found.'
+                    },
+                },
+            ),
+        }
+    )
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
 
 
 class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
