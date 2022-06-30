@@ -83,7 +83,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
-
+    
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
@@ -100,6 +100,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                             'Authentication credentials were not provided.'
                     },
                 },
+                schema=TaskSerializer,
             ),
             '404': openapi.Response(
                 description='Not found',
@@ -108,6 +109,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                         'detail': 'Not found.'
                     },
                 },
+                schema=TaskSerializer,
             ),
         }
     )
@@ -150,6 +152,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                             'Authentication credentials were not provided.'
                     },
                 },
+                schema=TaskSerializer,
             ),
             '404': openapi.Response(
                 description='Not found',
@@ -158,6 +161,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                         'detail': 'Not found.'
                     },
                 },
+                schema=TaskSerializer,
             ),
         }
     )
@@ -200,6 +204,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                             'Authentication credentials were not provided.'
                     },
                 },
+                schema=TaskSerializer,
             ),
             '404': openapi.Response(
                 description='Not found',
@@ -208,11 +213,53 @@ class TaskViewSet(viewsets.ModelViewSet):
                         'detail': 'Not found.'
                     },
                 },
+                schema=TaskSerializer,
             ),
         }
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        responses={
+            '200': openapi.Response(
+                description='Ok',
+                examples={
+                    'application/json': {
+                        'id': 0,
+                        'title': 'string',
+                        'description': 'string',
+                        'start_date': '2019-08-24T14:15:22Z',
+                        'end_date': '2019-08-24T14:15:22Z',
+                        'completed': True,
+                        'user': 0,
+                    }
+                },
+                schema=TaskSerializer,
+            ),
+            '401': openapi.Response(
+                description='Unauthorized',
+                examples={
+                    'application/json': {
+                        'detail':
+                            'Authentication credentials were not provided.'
+                    },
+                },
+                schema=TaskSerializer,
+            ),
+            '404': openapi.Response(
+                description='Not found',
+                examples={
+                    'application/json': {
+                        'detail': 'Not found.'
+                    },
+                },
+                schema=TaskSerializer,
+            ),
+        }
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
 
 
 class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
