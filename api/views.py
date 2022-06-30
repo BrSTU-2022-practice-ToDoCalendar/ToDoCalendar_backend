@@ -10,7 +10,6 @@ from .serializers import RegisterSerializer, TaskSerializer
 
 
 class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
 
@@ -260,6 +259,53 @@ class TaskViewSet(viewsets.ModelViewSet):
     )
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        responses={
+            '201': openapi.Response(
+                description='Created',
+                examples={
+                    'application/json': {
+                        'id': 0,
+                        'title': "string",
+                        'description': 'string',
+                        'start_date': "2019-08-24T14:15:22Z",
+                        'end_date': "2019-08-24T14:15:22Z",
+                        'user': 0
+                    },
+                },
+                schema=TaskSerializer,
+            ),
+            '400': openapi.Response(
+                description='Bad request',
+                examples={
+                    'application/json': {
+                        'title': [
+                            "This field is required."
+                        ],
+                        'start_date': [
+                            "This field is required."
+                        ],
+                        'end_date': [
+                            "This field is required."
+                        ]
+                    },
+                },
+                schema=TaskSerializer,
+            ),
+            '401': openapi.Response(
+                description='Unauthorized',
+                examples={
+                    'application/json': {
+                        'detail': "Authentication credentials were not provided."
+                    },
+                },
+                schema=TaskSerializer,
+            )
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 
 class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
