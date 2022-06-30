@@ -872,7 +872,7 @@ class TestUpdateTask:
         assert end_date != data['end_date']
 
         assert task.user.username == acc['username']
-    
+
     @pytest.mark.django_db
     def test_correct_put_all_fields_by_author(
             self,
@@ -916,7 +916,7 @@ class TestUpdateTask:
 
         assert task.user.username == acc['username']
 
-        assert task.completed == False
+        assert not task.completed
 
     @pytest.mark.django_db
     def test_correct_put_all_fields_by_another_user(
