@@ -265,12 +265,12 @@ class TaskViewSet(viewsets.ModelViewSet):
                 description='Created',
                 examples={
                     'application/json': {
-                        'id': 1,
+                        'id': 0,
                         'title': "Hello",
                         'description': 'string',
-                        'start_date': "2022-06-30T00:00:00Z",
-                        'end_date': "2023-07-30T20:30:00Z",
-                        'user': 1
+                        'start_date': "2019-08-24T14:15:22Z",
+                        'end_date': "2019-08-24T14:15:22Z",
+                        'user': 0
                     },
                 },
                 schema=TaskSerializer,
