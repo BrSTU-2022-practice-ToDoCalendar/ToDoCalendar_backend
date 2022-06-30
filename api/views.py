@@ -55,8 +55,8 @@ class TaskViewSet(viewsets.ModelViewSet):
         responses={
             '200': openapi.Response(
                 description='Ok',
-                examples=[{
-                    'application/json': {
+                examples={
+                    'application/json': [{
                         'id': 0,
                         'title': 'string',
                         'description': 'string',
@@ -64,8 +64,8 @@ class TaskViewSet(viewsets.ModelViewSet):
                         'end_date': '2019-08-24T14:15:22Z',
                         'completed': True,
                         'user': 0,
-                    }
-                }],
+                    }]
+                },
             ),
             '401': openapi.Response(
                 description='Unauthorized',
