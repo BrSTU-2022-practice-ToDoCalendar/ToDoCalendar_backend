@@ -60,6 +60,53 @@ class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @swagger_auto_schema(
+        responses={
+            '201': openapi.Response(
+                description='Created',
+                examples={
+                    'application/json': {
+                        'id': 1,
+                        'title': "Hello",
+                        'description': 0,
+                        'start_date': "2022-06-30T00:00:00Z",
+                        'end_date': "2023-07-30T20:30:00Z",
+                        'user': 1
+                    },
+                },
+                schema=TaskSerializer,
+            ),
+            '400': openapi.Response(
+                description='Bad request',
+                examples={
+                    'application/json': {
+                        'title': [
+                            "This field is required."
+                        ],
+                        'start_date': [
+                            "This field is required."
+                        ],
+                        'end_date': [
+                            "This field is required."
+                        ]
+                    },
+                },
+                schema=TaskSerializer,
+            ),
+            '401': openapi.Response(
+                description='Unauthorized',
+                examples={
+                    'application/json': {
+                        'detail': "Authentication credentials were not provided."
+                    },
+                },
+                schema=TaskSerializer,
+            )
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
 
 class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
 
