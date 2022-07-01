@@ -51,20 +51,28 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
     @swagger_auto_schema(
         responses={
             '200': openapi.Response(
                 description='Ok',
                 examples={
-                    'application/json': [{
-                        'id': 0,
-                        'title': 'string',
-                        'description': 'string',
-                        'start_date': '2019-08-24T14:15:22Z',
-                        'end_date': '2019-08-24T14:15:22Z',
-                        'completed': True,
-                        'user': 0,
-                    }]
+                    'application/json': [
+                        {
+                            'id': 0,
+                            'title': 'string',
+                            'description': 'string',
+                            'start_date': '2019-08-24T14:15:22Z',
+                            'end_date': '2019-08-24T14:15:22Z',
+                            'completed': True,
+                            'user': 0,
+                        }
+                    ]
                 },
             ),
             '401': openapi.Response(
@@ -80,12 +88,6 @@ class TaskViewSet(viewsets.ModelViewSet):
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
-
-    def get_queryset(self):
-        return Task.objects.filter(user=self.request.user)
-    
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
 
     @swagger_auto_schema(
         responses={
@@ -152,7 +154,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                             'Authentication credentials were not provided.'
                     },
                 },
-                schema=TaskSerializer,
+                # schema=TaskSerializer,
             ),
             '404': openapi.Response(
                 description='Not found',
