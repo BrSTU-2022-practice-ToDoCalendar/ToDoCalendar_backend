@@ -1,5 +1,6 @@
 from rest_framework import mixins
 from rest_framework import viewsets
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt import views, serializers
 from drf_yasg import openapi
@@ -86,7 +87,23 @@ class TaskViewSet(viewsets.ModelViewSet):
         }
     )
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        queryset = self.get_queryset()
+
+        if 'year' in request.query_params:
+            year = request.query_params.get('year')
+            queryset = queryset.filter(start_date__year=year)
+
+        if 'month' in request.query_params:
+            month = request.query_params.get('month')
+            queryset = queryset.filter(start_date__month=month)
+
+        if 'day' in request.query_params:
+            day = request.query_params.get('day')
+            queryset = queryset.filter(start_date__day=day)
+
+        queryset = queryset.order_by('start_date')
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
 
     @swagger_auto_schema(
         responses={
@@ -299,7 +316,8 @@ class TaskViewSet(viewsets.ModelViewSet):
                 description='Unauthorized',
                 examples={
                     'application/json': {
-                        'detail': "Authentication credentials were not provided."
+                        'detail':
+                            "Authentication credentials were not provided."
                     },
                 },
                 schema=TaskSerializer,
