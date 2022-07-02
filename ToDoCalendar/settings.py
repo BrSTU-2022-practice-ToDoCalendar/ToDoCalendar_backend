@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'api.apps.ApiConfig',
+    'django_password_validators',
+    'django_password_validators.password_history',
 ]
 
 MIDDLEWARE = [
@@ -100,6 +102,10 @@ DATABASES = {
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django_password_validators.password_history'
+                '.password_validation.UniquePasswordsValidator',
+    },
     {
         'NAME': 'django.contrib.auth.password_validation'
                 '.UserAttributeSimilarityValidator',
