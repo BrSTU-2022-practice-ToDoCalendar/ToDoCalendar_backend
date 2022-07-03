@@ -18,7 +18,6 @@ from .serializers import (
 
 
 class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
 
@@ -54,16 +53,14 @@ class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         return super().create(request, *args, **kwargs)
 
 
-class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
-                  mixins.UpdateModelMixin, mixins.ListModelMixin,
-                  mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class TaskViewSet(viewsets.ModelViewSet):
 
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
-
+    
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
@@ -215,7 +212,7 @@ class TaskViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin,
                             'Authentication credentials were not provided.'
                     },
                 },
-                # schema=TaskSerializer,
+                schema=TaskSerializer,
             ),
             '404': openapi.Response(
                 description='Not found',
