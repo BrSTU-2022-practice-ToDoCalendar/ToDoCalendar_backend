@@ -1,13 +1,20 @@
+from datetime import datetime
+
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt import views, serializers
+from rest_framework.decorators import action
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
 from .models import User, Task
-from .serializers import RegisterSerializer, TaskSerializer
+from .serializers import (
+    RegisterSerializer,
+    TaskSerializer,
+    TaskStatusesSerializer,
+)
 
 
 class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -56,6 +63,41 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    @action(detail=False, methods=['GET'])
+    def statuses(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        data = {}
+
+        for task in queryset:
+            date = task.start_date
+            key = datetime(year=date.year, month=date.month, day=date.day)
+
+            if key not in data:
+                data[key] = {
+                    'completed': False,
+                    'not_completed': False,
+                }
+
+            if task.completed:
+                data[key]['completed'] = True
+            else:
+                data[key]['not_completed'] = True
+
+        statuses = []
+        for date, status in data.items():
+            statuses.append(
+                {
+                    'date': date,
+                    'completed': status['completed'],
+                    'not_completed': status['not_completed'],
+                }
+            )
+        statuses.sort(key=lambda x: x['date'])
+
+        serializer = TaskStatusesSerializer(data=statuses, many=True)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data)
 
     @swagger_auto_schema(
         responses={

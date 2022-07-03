@@ -63,3 +63,9 @@ class TaskSerializer(serializers.ModelSerializer):
             )
 
         return value
+
+
+class TaskStatusesSerializer(serializers.Serializer):
+    date = serializers.DateTimeField()
+    completed = serializers.BooleanField()
+    not_completed = serializers.BooleanField()
