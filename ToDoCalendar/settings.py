@@ -31,7 +31,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['http://todo-innowise.voilalex.com/']
+CSRF_TRUSTED_ORIGINS = ['http://*.voilalex.com']
 
 
 # Application definition
