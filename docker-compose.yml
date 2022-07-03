@@ -8,7 +8,7 @@ services:
       - .:/app
     ports:
       - "5432:5432"
-    env_file: .env
+    env_file: .env-deploy
   web:
     build:
       context: .
@@ -17,7 +17,7 @@ services:
       - .:/app
     ports:
       - "7990:8000"
-    env_file: .env
+    env_file: .env-deploy
     command: sh /app/entrypoint.sh
     depends_on:
       - db
