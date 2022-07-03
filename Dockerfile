@@ -9,4 +9,6 @@ COPY Pipfile Pipfile.lock /app/
 RUN pip install pipenv \
     && pipenv install --deploy --system --ignore-pipfile
 
+COPY .env.example /app/.env
+
 COPY . /app/
