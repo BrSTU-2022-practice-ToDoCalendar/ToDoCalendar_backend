@@ -13,7 +13,7 @@ from .views import (
 
 router = DefaultRouter()
 router.register(r'register', RegisterViewSet, basename='register')
-router.register(r'task', TaskViewSet, basename='task')
+router.register(r'tasks', TaskViewSet, basename='task')
 
 
 urlpatterns = [
