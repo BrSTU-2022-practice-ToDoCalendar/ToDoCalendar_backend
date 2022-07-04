@@ -22,6 +22,7 @@ class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = RegisterSerializer
 
     @swagger_auto_schema(
+        security=[{'Basic': []}],
         responses={
             '201': openapi.Response(
                 description='Created',
@@ -64,6 +65,33 @@ class TaskViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @swagger_auto_schema(
+        security=[{'Bearer': []}],
+        responses={
+            '200': openapi.Response(
+                description='Ok',
+                examples={
+                    'application/json': [
+                        {
+                            'date': '2019-08-24',
+                            'completed': True,
+                            'not_completed': True,
+                        }
+                    ]
+                },
+                schema=TaskStatusesSerializer,
+            ),
+            '401': openapi.Response(
+                description='Unauthorized',
+                examples={
+                    'application/json': {
+                        'detail':
+                            'Authentication credentials were not provided.'
+                    },
+                },
+            ),
+        }
+    )
     @action(detail=False, methods=['GET'])
     def statuses(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -99,7 +127,28 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
+    year_param = openapi.Parameter(
+        'year',
+        openapi.IN_QUERY,
+        description='year in start_date field',
+        type=openapi.TYPE_NUMBER
+    )
+    month_param = openapi.Parameter(
+        'month',
+        openapi.IN_QUERY,
+        description='month in start_date field',
+        type=openapi.TYPE_NUMBER
+    )
+    day_param = openapi.Parameter(
+        'day',
+        openapi.IN_QUERY,
+        description='day in start_date field',
+        type=openapi.TYPE_NUMBER
+    )
+
     @swagger_auto_schema(
+        manual_parameters=[year_param, month_param, day_param],
+        security=[{'Bearer': []}],
         responses={
             '200': openapi.Response(
                 description='Ok',
@@ -126,7 +175,6 @@ class TaskViewSet(viewsets.ModelViewSet):
                             'Authentication credentials were not provided.'
                     },
                 },
-                schema=TaskSerializer,
             ),
         }
     )
@@ -150,6 +198,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @swagger_auto_schema(
+        security=[{'Bearer': []}],
         responses={
             '204': openapi.Response(
                 description='No content',
@@ -162,7 +211,6 @@ class TaskViewSet(viewsets.ModelViewSet):
                             'Authentication credentials were not provided.'
                     },
                 },
-                schema=TaskSerializer,
             ),
             '404': openapi.Response(
                 description='Not found',
@@ -171,7 +219,6 @@ class TaskViewSet(viewsets.ModelViewSet):
                         'detail': 'Not found.'
                     },
                 },
-                schema=TaskSerializer,
             ),
         }
     )
@@ -179,6 +226,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
     @swagger_auto_schema(
+        security=[{'Bearer': []}],
         responses={
             '200': openapi.Response(
                 description='Ok',
@@ -214,7 +262,6 @@ class TaskViewSet(viewsets.ModelViewSet):
                             'Authentication credentials were not provided.'
                     },
                 },
-                # schema=TaskSerializer,
             ),
             '404': openapi.Response(
                 description='Not found',
@@ -223,7 +270,6 @@ class TaskViewSet(viewsets.ModelViewSet):
                         'detail': 'Not found.'
                     },
                 },
-                schema=TaskSerializer,
             ),
         }
     )
@@ -231,6 +277,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
     @swagger_auto_schema(
+        security=[{'Bearer': []}],
         responses={
             '200': openapi.Response(
                 description='Ok',
@@ -266,7 +313,6 @@ class TaskViewSet(viewsets.ModelViewSet):
                             'Authentication credentials were not provided.'
                     },
                 },
-                schema=TaskSerializer,
             ),
             '404': openapi.Response(
                 description='Not found',
@@ -275,7 +321,6 @@ class TaskViewSet(viewsets.ModelViewSet):
                         'detail': 'Not found.'
                     },
                 },
-                schema=TaskSerializer,
             ),
         }
     )
@@ -283,6 +328,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         return super().partial_update(request, *args, **kwargs)
 
     @swagger_auto_schema(
+        security=[{'Bearer': []}],
         responses={
             '200': openapi.Response(
                 description='Ok',
@@ -307,7 +353,6 @@ class TaskViewSet(viewsets.ModelViewSet):
                             'Authentication credentials were not provided.'
                     },
                 },
-                schema=TaskSerializer,
             ),
             '404': openapi.Response(
                 description='Not found',
@@ -316,7 +361,6 @@ class TaskViewSet(viewsets.ModelViewSet):
                         'detail': 'Not found.'
                     },
                 },
-                schema=TaskSerializer,
             ),
         }
     )
@@ -324,6 +368,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     @swagger_auto_schema(
+        security=[{'Bearer': []}],
         responses={
             '201': openapi.Response(
                 description='Created',
@@ -364,17 +409,17 @@ class TaskViewSet(viewsets.ModelViewSet):
                             "Authentication credentials were not provided."
                     },
                 },
-                schema=TaskSerializer,
             )
         }
     )
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
 
 class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
 
     @swagger_auto_schema(
+        security=[{'Basic': []}],
         responses={
             '200': openapi.Response(
                 description='Ok',
@@ -403,7 +448,6 @@ class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
                         'code': 'token_not_valid',
                     },
                 },
-                schema=serializers.TokenRefreshSerializer,
             )
         }
     )
@@ -414,6 +458,7 @@ class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
 class DecoratedToSwaggerTokenVerifyView(views.TokenVerifyView):
 
     @swagger_auto_schema(
+        security=[{'Basic': []}],
         responses={
             '200': openapi.Response(
                 description='Ok',
@@ -439,7 +484,6 @@ class DecoratedToSwaggerTokenVerifyView(views.TokenVerifyView):
                         'code': 'token_not_valid',
                     },
                 },
-                schema=serializers.TokenVerifySerializer,
             )
         }
     )
@@ -450,6 +494,7 @@ class DecoratedToSwaggerTokenVerifyView(views.TokenVerifyView):
 class DecoratedToSwaggerTokenObtainPairView(views.TokenObtainPairView):
 
     @swagger_auto_schema(
+        security=[{'Basic': []}],
         responses={
             '200': openapi.Response(
                 description='Ok',
@@ -483,7 +528,6 @@ class DecoratedToSwaggerTokenObtainPairView(views.TokenObtainPairView):
                                    'given credentials'),
                     },
                 },
-                schema=serializers.TokenObtainPairSerializer,
             )
         }
     )
