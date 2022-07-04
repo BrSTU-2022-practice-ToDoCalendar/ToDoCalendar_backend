@@ -170,6 +170,43 @@ class TestRetrieveTask:
         )
 
     @pytest.mark.django_db
+    def test_retrieve_tasks_by_author(
+            self,
+            client,
+            set_of_authenticated_accounts_data,
+            set_of_tasks_data,
+            convert_date_class_to_iso_format,
+    ):
+        url = reverse('task-list')
+
+        acc = set_of_authenticated_accounts_data['authenticated_account1']
+        auth_header = (
+            'Bearer '
+            f'{acc["access-token"]}'
+        )
+
+        response = client.get(
+            url,
+            HTTP_AUTHORIZATION=auth_header,
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        tasks = (set_of_tasks_data['task1'], set_of_tasks_data['task2'])
+        n = 0
+        for task in tasks:
+            assert task.title == response.data[n]['title']
+            assert task.description == response.data[n]['description']
+            assert task.start_date == response.data[n]['start_date']
+            assert task.end_date == response.data[n]['end_date']
+            assert task.user.id == response.data[n]['user']
+
+            assert task.user == User.objects.get(
+                username=acc['username']
+            )
+            n += 1
+
+    @pytest.mark.django_db
     def test_retrieve_invalid_task_id(
             self,
             client,
@@ -222,6 +259,19 @@ class TestRetrieveTask:
             set_of_tasks_data,
     ):
         url = reverse('task-detail', args=[set_of_tasks_data['task1'].id])
+
+        response = client.get(url)
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.data['detail'].code == 'not_authenticated'
+
+    @pytest.mark.django_db
+    def test_retrieve_tasks_by_unauthorized_user(
+            self,
+            client,
+            set_of_tasks_data,
+    ):
+        url = reverse('task-list')
 
         response = client.get(url)
 

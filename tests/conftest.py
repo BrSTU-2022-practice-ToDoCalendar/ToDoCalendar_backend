@@ -13,12 +13,12 @@ def set_of_users_data():
     user1 = User.objects.create(
         username='testuser',
         email='testuser@mail.ru',
-        password='1234',
+        password='123qeqweQ_4',
     )
     user2 = User.objects.create(
         username='usertest',
         email='usertest@mail.ru',
-        password='1234',
+        password='123qeqweQ_4',
     )
 
     return {'user1': user1, 'user2': user2}
@@ -30,7 +30,7 @@ def set_of_accounts_data():
     account1 = {
         'username': 'testacc',
         'email': 'testacc@mail.ru',
-        'password': '1234',
+        'password': '123qeqweQ_4',
     }
 
     serializer = RegisterSerializer(data=account1)
@@ -40,7 +40,7 @@ def set_of_accounts_data():
     account2 = {
         'username': 'useracc',
         'email': 'useracc@mail.ru',
-        'password': '1234',
+        'password': '123qeqweQ_4',
     }
     serializer = RegisterSerializer(data=account2)
     serializer.is_valid()

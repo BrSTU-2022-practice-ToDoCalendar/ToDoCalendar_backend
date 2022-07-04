@@ -12,7 +12,7 @@ def test_new_user_register(client):
     data = {
         'username': 'test',
         'email': 'test@mail.ru',
-        'password': '1234',
+        'password': '123qeqweQ_4',
     }
     response = client.post(url, data=data)
 
