@@ -56,11 +56,15 @@ class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
 class TaskViewSet(viewsets.ModelViewSet):
 
-    serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        if self.action == 'statuses':
+            return TaskStatusesSerializer
+        return TaskSerializer
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -123,7 +127,8 @@ class TaskViewSet(viewsets.ModelViewSet):
             )
         statuses.sort(key=lambda x: x['date'])
 
-        serializer = TaskStatusesSerializer(data=statuses, many=True)
+        serializer = self.get_serializer_class()
+        serializer = serializer(data=statuses, many=True)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
@@ -194,7 +199,8 @@ class TaskViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(start_date__day=day)
 
         queryset = queryset.order_by('start_date')
-        serializer = self.serializer_class(queryset, many=True)
+        serializer = self.get_serializer_class()
+        serializer = serializer(queryset, many=True)
         return Response(serializer.data)
 
     @swagger_auto_schema(
