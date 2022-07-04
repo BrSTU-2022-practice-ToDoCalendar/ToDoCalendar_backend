@@ -116,6 +116,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                         }
                     ]
                 },
+                schema=TaskSerializer,
             ),
             '401': openapi.Response(
                 description='Unauthorized',
@@ -125,6 +126,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                             'Authentication credentials were not provided.'
                     },
                 },
+                schema=TaskSerializer,
             ),
         }
     )
