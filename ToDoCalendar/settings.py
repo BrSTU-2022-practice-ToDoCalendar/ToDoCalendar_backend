@@ -173,3 +173,5 @@ SWAGGER_SETTINGS = {
       }
    }
 }
+
+CSRF_TRUSTED_ORIGINS = ['https://*.voilalex.com']
