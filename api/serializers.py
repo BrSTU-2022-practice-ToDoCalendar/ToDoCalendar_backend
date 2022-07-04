@@ -32,16 +32,23 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = (
-            'id', 'title', 'description', 'start_date', 'end_date', 'user'
+            'id',
+            'title',
+            'description',
+            'start_date',
+            'end_date',
+            'completed',
+            'user',
         )
         read_only_fields = ('id', 'user')
         extra_kwargs = {
             'title': {
-                'required': True, 'allow_blank': False, 'allow_null': True
-                },
+                'required': True, 'allow_blank': False, 'allow_null': False
+            },
             'description': {'allow_null': True},
             'start_date': {'required': True},
             'end_date': {'required': True},
+            'completed': {'allow_null': False},
         }
 
     def validate(self, value):
@@ -58,3 +65,9 @@ class TaskSerializer(serializers.ModelSerializer):
             )
 
         return value
+
+
+class TaskStatusesSerializer(serializers.Serializer):
+    date = serializers.DateTimeField()
+    completed = serializers.BooleanField()
+    not_completed = serializers.BooleanField()

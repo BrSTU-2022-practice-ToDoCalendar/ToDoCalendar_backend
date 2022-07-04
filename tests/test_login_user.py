@@ -27,6 +27,7 @@ def test_invalid_user_login(client):
     }
     response = client.post(url, data=data)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.data['detail'].code == 'no_active_account'
 
 
 @pytest.mark.django_db

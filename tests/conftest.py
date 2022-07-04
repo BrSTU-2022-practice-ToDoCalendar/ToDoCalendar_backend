@@ -2,7 +2,6 @@ import datetime
 
 import pytest
 from django.urls import reverse
-from rest_framework.authtoken.models import Token
 
 from api.models import User, Task
 from api.serializers import RegisterSerializer
@@ -90,6 +89,7 @@ def set_of_tasks_data(client, set_of_accounts_data):
         description='string1',
         start_date='2019-08-24T14:15:22Z',
         end_date='2019-10-24T14:15:22Z',
+        completed=False,
         user=account1
     )
     task2 = Task.objects.create(
@@ -97,6 +97,7 @@ def set_of_tasks_data(client, set_of_accounts_data):
         description='string2',
         start_date='2019-08-24T14:15:22Z',
         end_date='2019-10-24T14:15:22Z',
+        completed=False,
         user=account1
     )
 
@@ -108,6 +109,7 @@ def set_of_tasks_data(client, set_of_accounts_data):
         description='string3',
         start_date='2019-08-24T14:15:22Z',
         end_date='2019-10-24T14:15:22Z',
+        completed=False,
         user=account2
     )
     task4 = Task.objects.create(
@@ -115,6 +117,7 @@ def set_of_tasks_data(client, set_of_accounts_data):
         description='string4',
         start_date='2019-08-24T14:15:22Z',
         end_date='2019-10-24T14:15:22Z',
+        completed=False,
         user=account2
     )
 

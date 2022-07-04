@@ -16,6 +16,7 @@ pytest-django = "*"
 django-cors-headers = "*"
 pytest = "*"
 django-password-validators = "*"
+pre-commit = "*"
 
 [dev-packages]
 
