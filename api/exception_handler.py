@@ -14,6 +14,6 @@ def api_exception_handler(exc, context):
         else:
             error_message = error
 
-        response.data = {field: [error_message]}
+        response.data = {field: error_message}
 
     return response
