@@ -1,0 +1,21 @@
+name: Deploy to Docker Hub
+
+on:
+  push:
+    branches: ['dev']
+
+jobs:
+  docker-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: docker login
+        uses: docker/login-action@v2.0.0
+        with:
+          username: ${{ secrets.DOCKER_HUB__LOGIN }}
+          password: ${{ secrets.DOCKER_HUB__PASSWORD }}
+
+      - name: docker build and docker push
+        uses: docker/build-push-action@v3.0.0
+        with:
+          push: true
+          tags: igorlukovets/todocalendar_backend:latest

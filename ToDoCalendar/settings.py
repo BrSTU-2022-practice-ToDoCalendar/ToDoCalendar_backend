@@ -12,12 +12,12 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
 
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-_xu4n888^^rr2n9!p@#*&9y1ak9)08e0lln7*bk@4' \
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -41,11 +41,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'pytest',
+    'drf_yasg',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'api.apps.ApiConfig',
+    'django_password_validators',
+    'django_password_validators.password_history',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -80,11 +89,11 @@ WSGI_APPLICATION = 'ToDoCalendar.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DBNAME'),
-        'USER': os.getenv('DBUSER'),
-        'PASSWORD': os.getenv('DBPASSWORD'),
-        'HOST': os.getenv('DBHOST'),
-        'PORT': os.getenv('DBPORT'),
+        'NAME': os.getenv('POSTGRES_DB') or 'todocalendar',
+        'USER': os.getenv('POSTGRES_USER') or 'todocalendar',
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD') or '1234',
+        'HOST': os.getenv('POSTGRES_HOST') or 'localhost',
+        'PORT': os.getenv('POSTGRES_PORT') or '5432',
     }
 }
 
@@ -95,21 +104,37 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation'
-                '.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation'
                 '.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation'
-                '.CommonPasswordValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation'
                 '.NumericPasswordValidator',
     },
+    {
+        'NAME': 'django_password_validators.password_character_requirements.'
+                'password_validation.PasswordCharacterValidator',
+        'OPTIONS': {
+            'min_length_digit': 1,
+            'min_length_lower': 1,
+            'min_length_upper': 1,
+            'special_characters': "~!@#$%^&*()_+{}\":;'[]"
+        }
+    },
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+
+
+SIMPLE_JWT = {
+    # 'JWT_ALLOW_REFRESH': True,
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+}
 
 
 # Internationalization
@@ -133,3 +158,20 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Basic': {
+            'type': 'basic'
+      },
+      'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}
+
+CSRF_TRUSTED_ORIGINS = ['https://*.voilalex.com']
