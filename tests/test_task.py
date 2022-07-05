@@ -76,7 +76,6 @@ class TestCreateTask:
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.data['title'][0].code == 'required'
-        assert response.data['start_date'][0].code == 'invalid'
 
         assert Task.objects.count() == 0
 

@@ -41,4 +41,3 @@ def test_blank_user_login(client):
     response = client.post(url, data=data)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.data['username'][0].code == 'blank'
-    assert response.data['password'][0].code == 'blank'
