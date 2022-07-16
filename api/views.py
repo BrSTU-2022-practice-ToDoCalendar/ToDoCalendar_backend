@@ -16,11 +16,171 @@ from .serializers import (
     TaskStatusesSerializer,
 )
 
+example_task = {
+    'id': 1,
+    'title': 'string',
+    'description': 'string',
+    'start_date': '2022-06-05T10:15:00Z',
+    'end_date': '2022-06-05T10:20:00Z',
+    'completed': True,
+    'user': 1,
+}
+
+open_api_400_required_title = openapi.Response(
+    description='Bad Request',
+    examples={
+        'application/json': {
+            'title': 'This field is required.',
+        },
+    },
+    schema=TaskSerializer, # Тут нужно поменять
+)
+
+open_api_400_required_start_date = openapi.Response(
+    description='Bad Request',
+    examples={
+        'application/json': {
+            'start_date': 'This field is required.',
+        },
+    },
+    schema=TaskSerializer, # Тут нужно поменять
+)
+
+open_api_400_required_end_date = openapi.Response(
+    description='Bad Request',
+    examples={
+        'application/json': {
+            'end_date': 'This field is required.',
+        },
+    },
+    schema=TaskSerializer, # Тут нужно поменять
+)
+
+open_api_400_blank_title = openapi.Response(
+    description='Bad Request',
+    examples={
+        'application/json': {
+            'title': 'This field may not be blank.',
+        },
+    },
+    schema=TaskSerializer, # Тут нужно поменять
+)
+
+open_api_400_blank_start_date = openapi.Response(
+    description='Bad Request',
+    examples={
+        'application/json': {
+            'start_date': 'Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].',
+        },
+    },
+    schema=TaskSerializer, # Тут нужно поменять
+)
+
+open_api_400_blank_end_date = openapi.Response(
+    description='Bad Request',
+    examples={
+        'application/json': {
+            'end_date': 'Datetime has wrong format. Use one of these formats instead: YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z].',
+        },
+    },
+    schema=TaskSerializer, # Тут нужно поменять
+)
+
+open_api_400_blank_username = openapi.Response(
+    description='Bad request',
+    examples={
+        'application/json': {
+            'username': 'This field may not be blank.',
+        },
+    },
+    schema=serializers.TokenObtainPairSerializer,  # Тут нужно поменять
+)
+
+open_api_400_blank_email = openapi.Response(
+    description='Bad request',
+    examples={
+        'application/json': {
+            'username': 'This field may not be blank.',
+        },
+    },
+    schema=serializers.TokenObtainPairSerializer,  # Тут нужно поменять
+)
+
+open_api_400_blank_password = openapi.Response(
+    description='Bad request',
+    examples={
+        'application/json': {
+            'password': 'This field may not be blank.',
+        },
+    },
+    schema=serializers.TokenObtainPairSerializer,  # Тут нужно поменять
+)
+
+open_api_401_token = openapi.Response(
+    description='Unautorized',
+    examples={
+        'application/json': {
+            'detail': 'Token is invalid or expired',
+            'code': 'token_not_valid'
+        },
+    },
+    schema=TaskSerializer, # Тут нужно поменять
+)
+
+open_api_401_token_type = openapi.Response(
+    description='Unautorized',
+    examples={
+        'application/json': {
+            'detail': 'Token has wrong type',
+            'code': 'token_not_valid'
+        },
+    },
+    schema=TaskSerializer, # Тут нужно поменять
+)
+
+open_api_401_tasks_token = openapi.Response(
+    description='Unautorized',
+    examples={
+        'application/json': {
+           'detail': "Given token not valid for any token type",
+            'code': "token_not_valid",
+            'messages': [
+                {
+                    'token_class': 'AccessToken',
+                    'token_type': 'access',
+                    'message': 'Token is invalid or expired'
+                }
+            ]
+        },
+    },
+    schema=TaskSerializer, # Тут нужно поменять
+)
+
+open_api_404 = openapi.Response(
+    description='Not found',
+    examples={
+        'application/json': {
+            'detail': 'Not found.'
+        },
+    },
+    schema=TaskSerializer, # Тут нужно поменять
+)
+
+open_api_415 = openapi.Response(
+    description='Unsupported Media Type',
+    examples={
+        'application/json': {
+            'detail': 'Unsupported media type "text/plain" in request.'
+        },
+    },
+    schema=TaskSerializer, # Тут нужно поменять
+)
 
 class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
 
+    # POST /register/
     @swagger_auto_schema(
         security=[{'Basic': []}],
         responses={
@@ -34,20 +194,64 @@ class RegisterViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 },
                 schema=RegisterSerializer,
             ),
-            '400': openapi.Response(
+            '400': open_api_400_blank_username,
+            '400 (blank email)': open_api_400_blank_email,
+            '400 (blank password)': open_api_400_blank_password,
+            '400 (exist username)': openapi.Response(
                 description='Bad request',
                 examples={
                     'application/json': {
-                        'username': [
-                            'A user with that username already exists.',
-                        ],
-                        'email': [
-                            'A user with this email already exist',
-                        ],
+                        'username': 'A user with that username already exists.',
                     },
                 },
                 schema=RegisterSerializer,
-            )
+            ),
+            '400 (exist email)': openapi.Response(
+                description='Bad request',
+                examples={
+                    'application/json': {
+                        'email': 'A user with this email already exist',
+                    },
+                },
+                schema=RegisterSerializer,
+            ),
+            '400 (password 8 char)': openapi.Response(
+                description='Bad request',
+                examples={
+                    'application/json': {
+                        'password': 'This password is too short. It must contain at least 8 characters.',
+                    },
+                },
+                schema=RegisterSerializer,
+            ),
+            '400 (password num)': openapi.Response(
+                description='Bad request',
+                examples={
+                    'application/json': {
+                        'password': 'This password is entirely numeric.',
+                    },
+                },
+                schema=RegisterSerializer,
+            ),
+            '400 (password up)': openapi.Response(
+                description='Bad request',
+                examples={
+                    'application/json': {
+                        'password': 'This password must contain at least 1 upper case letter.',
+                    },
+                },
+                schema=RegisterSerializer,
+            ),
+            '400 (password special)': openapi.Response(
+                description='Bad request',
+                examples={
+                    'application/json': {
+                        'password': 'This password must contain at least 1 special character.',
+                    },
+                },
+                schema=RegisterSerializer,
+            ),
+            '415': open_api_415,
         }
     )
     def create(self, request, *args, **kwargs):
@@ -69,6 +273,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    # GET /tasks/statuses/
     @swagger_auto_schema(
         security=[{'Bearer': []}],
         responses={
@@ -85,15 +290,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                 },
                 schema=TaskStatusesSerializer,
             ),
-            '401': openapi.Response(
-                description='Unauthorized',
-                examples={
-                    'application/json': {
-                        'detail':
-                            'Authentication credentials were not provided.'
-                    },
-                },
-            ),
+            '401': open_api_401_tasks_token,
         }
     )
     @action(detail=False, methods=['GET'])
@@ -151,6 +348,7 @@ class TaskViewSet(viewsets.ModelViewSet):
         type=openapi.TYPE_NUMBER
     )
 
+    # GET /tasks/
     @swagger_auto_schema(
         manual_parameters=[year_param, month_param, day_param],
         security=[{'Bearer': []}],
@@ -159,28 +357,12 @@ class TaskViewSet(viewsets.ModelViewSet):
                 description='Ok',
                 examples={
                     'application/json': [
-                        {
-                            'id': 0,
-                            'title': 'string',
-                            'description': 'string',
-                            'start_date': '2019-08-24T14:15:22Z',
-                            'end_date': '2019-08-24T14:15:22Z',
-                            'completed': True,
-                            'user': 0,
-                        }
+                        example_task,
                     ]
                 },
                 schema=TaskSerializer,
             ),
-            '401': openapi.Response(
-                description='Unauthorized',
-                examples={
-                    'application/json': {
-                        'detail':
-                            'Authentication credentials were not provided.'
-                    },
-                },
-            ),
+            '401': open_api_401_tasks_token
         }
     )
     def list(self, request, *args, **kwargs):
@@ -203,219 +385,101 @@ class TaskViewSet(viewsets.ModelViewSet):
         serializer = serializer(queryset, many=True)
         return Response(serializer.data)
 
+    # DELETE /tasks/{id}/
     @swagger_auto_schema(
         security=[{'Bearer': []}],
         responses={
             '204': openapi.Response(
                 description='No content',
             ),
-            '401': openapi.Response(
-                description='Unauthorized',
-                examples={
-                    'application/json': {
-                        'detail':
-                            'Authentication credentials were not provided.'
-                    },
-                },
-            ),
-            '404': openapi.Response(
-                description='Not found',
-                examples={
-                    'application/json': {
-                        'detail': 'Not found.'
-                    },
-                },
-            ),
+            '401': open_api_401_tasks_token,
+            '404': open_api_404,
         }
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
 
+    # PUT /tasks/{id}/
     @swagger_auto_schema(
         security=[{'Bearer': []}],
         responses={
             '200': openapi.Response(
                 description='Ok',
                 examples={
-                    'application/json': {
-                        'id': 0,
-                        'title': 'string',
-                        'description': 'string',
-                        'start_date': '2019-08-24T14:15:22Z',
-                        'end_date': '2019-08-24T14:15:22Z',
-                        'completed': True,
-                        'user': 0,
-                    }
+                    'application/json': example_task,
                 },
                 schema=TaskSerializer,
             ),
-            '400': openapi.Response(
-                description='Bad request',
-                examples={
-                    'application/json': {
-                        'title': [
-                            'This field may not be blank.',
-                        ],
-                    },
-                },
-                schema=TaskSerializer,
-            ),
-            '401': openapi.Response(
-                description='Unauthorized',
-                examples={
-                    'application/json': {
-                        'detail':
-                            'Authentication credentials were not provided.'
-                    },
-                },
-            ),
-            '404': openapi.Response(
-                description='Not found',
-                examples={
-                    'application/json': {
-                        'detail': 'Not found.'
-                    },
-                },
-            ),
+            '400': open_api_400_required_title,
+            '400 (required start_date)': open_api_400_required_start_date,
+            '400 (required end_date)': open_api_400_required_end_date,
+            '400 (blank title)': open_api_400_blank_title,
+            '400 (blank start_date)': open_api_400_blank_start_date,
+            '400 (blank end_date)': open_api_400_blank_end_date,
+            '401': open_api_401_tasks_token,
+            '404': open_api_404,
+            '415': open_api_415,
         }
     )
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
 
+    # PATCH /tasks/{id}/
     @swagger_auto_schema(
         security=[{'Bearer': []}],
         responses={
             '200': openapi.Response(
                 description='Ok',
                 examples={
-                    'application/json': {
-                        'id': 0,
-                        'title': 'string',
-                        'description': 'string',
-                        'start_date': '2019-08-24T14:15:22Z',
-                        'end_date': '2019-08-24T14:15:22Z',
-                        'completed': True,
-                        'user': 0,
-                    }
+                    'application/json': example_task,
                 },
                 schema=TaskSerializer,
             ),
-            '400': openapi.Response(
-                description='Bad request',
-                examples={
-                    'application/json': {
-                        'title': [
-                            'This field may not be blank.',
-                        ],
-                    },
-                },
-                schema=TaskSerializer,
-            ),
-            '401': openapi.Response(
-                description='Unauthorized',
-                examples={
-                    'application/json': {
-                        'detail':
-                            'Authentication credentials were not provided.'
-                    },
-                },
-            ),
-            '404': openapi.Response(
-                description='Not found',
-                examples={
-                    'application/json': {
-                        'detail': 'Not found.'
-                    },
-                },
-            ),
+            '401': open_api_401_tasks_token,
+            '404': open_api_404,
+            '415': open_api_415,
         }
     )
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
 
+    # GET /tasks/{id}/
     @swagger_auto_schema(
         security=[{'Bearer': []}],
         responses={
             '200': openapi.Response(
                 description='Ok',
                 examples={
-                    'application/json': {
-                        'id': 0,
-                        'title': 'string',
-                        'description': 'string',
-                        'start_date': '2019-08-24T14:15:22Z',
-                        'end_date': '2019-08-24T14:15:22Z',
-                        'completed': True,
-                        'user': 0,
-                    }
+                    'application/json': example_task,
                 },
                 schema=TaskSerializer,
             ),
-            '401': openapi.Response(
-                description='Unauthorized',
-                examples={
-                    'application/json': {
-                        'detail':
-                            'Authentication credentials were not provided.'
-                    },
-                },
-            ),
-            '404': openapi.Response(
-                description='Not found',
-                examples={
-                    'application/json': {
-                        'detail': 'Not found.'
-                    },
-                },
-            ),
+            '401': open_api_401_tasks_token,
+            '404': open_api_404,
         }
     )
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
+    # POST /tasks/
     @swagger_auto_schema(
         security=[{'Bearer': []}],
         responses={
             '201': openapi.Response(
                 description='Created',
                 examples={
-                    'application/json': {
-                        'id': 0,
-                        'title': "string",
-                        'description': 'string',
-                        'start_date': "2019-08-24T14:15:22Z",
-                        'end_date': "2019-08-24T14:15:22Z",
-                        'user': 0
-                    },
+                    'application/json': example_task,
                 },
                 schema=TaskSerializer,
             ),
-            '400': openapi.Response(
-                description='Bad request',
-                examples={
-                    'application/json': {
-                        'title': [
-                            "This field is required."
-                        ],
-                        'start_date': [
-                            "This field is required."
-                        ],
-                        'end_date': [
-                            "This field is required."
-                        ]
-                    },
-                },
-                schema=TaskSerializer,
-            ),
-            '401': openapi.Response(
-                description='Unauthorized',
-                examples={
-                    'application/json': {
-                        'detail':
-                            "Authentication credentials were not provided."
-                    },
-                },
-            )
+            '400': open_api_400_required_title,
+            '400 (required start_date)': open_api_400_required_start_date,
+            '400 (required end_date)': open_api_400_required_end_date,
+            '400 (blank title)': open_api_400_blank_title,
+            '400 (blank start_date)': open_api_400_blank_start_date,
+            '400 (blank end_date)': open_api_400_blank_end_date,
+            '401': open_api_401_tasks_token,
+            '415': open_api_415,
         }
     )
     def create(self, request, *args, **kwargs):
@@ -424,6 +488,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
 class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
 
+    # POST /refresh-token/
     @swagger_auto_schema(
         security=[{'Basic': []}],
         responses={
@@ -431,30 +496,23 @@ class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
                 description='Ok',
                 examples={
                     'application/json': {
-                        'access': 'string',
-                        'refresh': 'string',
+                        'access': '36symbols.150symbols.43symbols',
                     },
                 },
-                schema=serializers.TokenRefreshSerializer,
+                schema=serializers.TokenRefreshSerializer, # Тут нужно поменять
             ),
             '400': openapi.Response(
                 description='Bad request',
                 examples={
                     'application/json': {
-                        'refresh': ['This field may not be blank.'],
+                        'refresh': 'This field may not be blank.'
                     },
                 },
-                schema=serializers.TokenRefreshSerializer,
+                schema=serializers.TokenRefreshSerializer,  # Тут нужно поменять
             ),
-            '401': openapi.Response(
-                description='Unauthorized',
-                examples={
-                    'application/json': {
-                        'detail': 'Token is invalid or expired',
-                        'code': 'token_not_valid',
-                    },
-                },
-            )
+            '401': open_api_401_token,
+            '401 (type)': open_api_401_token_type,
+            '415': open_api_415,
         }
     )
     def post(self, request, *args, **kwargs):
@@ -463,6 +521,7 @@ class DecoratedToSwaggerTokenRefreshView(views.TokenRefreshView):
 
 class DecoratedToSwaggerTokenVerifyView(views.TokenVerifyView):
 
+    # POST /verify-token/
     @swagger_auto_schema(
         security=[{'Basic': []}],
         responses={
@@ -477,20 +536,13 @@ class DecoratedToSwaggerTokenVerifyView(views.TokenVerifyView):
                 description='Bad request',
                 examples={
                     'application/json': {
-                        'token': ['This field may not be blank.'],
+                        'token': 'This field may not be blank.',
                     },
                 },
                 schema=serializers.TokenVerifySerializer,
             ),
-            '401': openapi.Response(
-                description='Unauthorized',
-                examples={
-                    'application/json': {
-                        'detail': 'Token is invalid or expired',
-                        'code': 'token_not_valid',
-                    },
-                },
-            )
+            '401': open_api_401_token,
+            '415': open_api_415,
         }
     )
     def post(self, request, *args, **kwargs):
@@ -499,6 +551,7 @@ class DecoratedToSwaggerTokenVerifyView(views.TokenVerifyView):
 
 class DecoratedToSwaggerTokenObtainPairView(views.TokenObtainPairView):
 
+    # POST /login/
     @swagger_auto_schema(
         security=[{'Basic': []}],
         responses={
@@ -506,35 +559,24 @@ class DecoratedToSwaggerTokenObtainPairView(views.TokenObtainPairView):
                 description='Ok',
                 examples={
                     'application/json': {
-                        'username': 'string',
-                        'password': 'string',
+                        'refresh': '36symbols.150symbols.43symbols',
+                        'access': '36symbols.150symbols.43symbols',
                     },
                 },
                 schema=serializers.TokenObtainPairSerializer,
             ),
-            '400': openapi.Response(
-                description='Bad request',
-                examples={
-                    'application/json': {
-                        'username': [
-                            'This field may not be blank.',
-                        ],
-                        'password': [
-                            'This field may not be blank.',
-                        ],
-                    },
-                },
-                schema=serializers.TokenObtainPairSerializer,
-            ),
+            '400': open_api_400_blank_username,
+            '400 (blank password)': open_api_400_blank_password,
             '401': openapi.Response(
                 description='Unauthorized',
                 examples={
                     'application/json': {
-                        'detail': ('No active account found with the '
-                                   'given credentials'),
+                        'detail': 'No active account found with the given credentials'
                     },
                 },
-            )
+                schema=serializers.TokenObtainPairSerializer,
+            ),
+            '415': open_api_415,
         }
     )
     def post(self, request, *args, **kwargs):
