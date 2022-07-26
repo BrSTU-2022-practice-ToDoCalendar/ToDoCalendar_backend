@@ -37,6 +37,7 @@
 git clone https://github.com/ToDoCalendar/ToDoCalendar_backend.git
 cd ToDoCalendar_backend
 docker-compose up
+cp .env.example .env
 ```
 
 ## Как запустить приложение для разработки
@@ -44,6 +45,7 @@ docker-compose up
 ```bash
 git clone https://github.com/ToDoCalendar/ToDoCalendar_backend.git
 cd ToDoCalendar_backend
+cp .env.example .env
 
 pip install pipenv
 pipenv shell
